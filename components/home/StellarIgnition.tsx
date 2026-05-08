@@ -132,7 +132,12 @@ export function StellarIgnition() {
 
       <div className="mt-5 grid gap-4 md:grid-cols-2 md:gap-6">
         <label className="block font-mono text-[8px] tracking-[0.18em] text-[#6a7179]">
-          <span className="mb-2 block text-[#8e959e]">{t('home.igniteCorridor')}</span>
+          <span className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="text-[#8e959e]">{t('home.igniteCorridor')}</span>
+            <span className="rounded-sm bg-amber-500/15 px-1.5 py-0.5 text-[8px] font-medium tracking-[0.12em] text-amber-200/95 ring-1 ring-amber-400/25">
+              {t('home.igniteCorridorHint')}
+            </span>
+          </span>
           <select
             value={corridor}
             onChange={(e) => setCorridor(e.target.value as ObservationPanelId)}

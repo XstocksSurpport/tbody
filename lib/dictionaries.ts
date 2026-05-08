@@ -41,6 +41,7 @@ export type Dictionary = {
     walletDisconnect: string;
     igniteTitle: string;
     igniteCorridor: string;
+    igniteCorridorHint: string;
     igniteEra: string;
     igniteSharesLabel: string;
     igniteTotalLabel: string;
@@ -307,6 +308,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       walletDisconnect: 'DISCONNECT',
       igniteTitle: 'STELLAR IGNITION',
       igniteCorridor: 'Corridor',
+      igniteCorridorHint: 'Select the civilization to join',
       igniteEra: 'Era',
       igniteSharesLabel: 'Ignition quantity',
       igniteTotalLabel: 'Total due',
@@ -619,6 +621,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       walletDisconnect: '断开',
       igniteTitle: '恒星点燃',
       igniteCorridor: '文明走廊',
+      igniteCorridorHint: '请选择加入的文明',
       igniteEra: '纪元',
       igniteSharesLabel: '点燃数量',
       igniteTotalLabel: '应付合计',

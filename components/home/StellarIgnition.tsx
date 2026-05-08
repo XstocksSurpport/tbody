@@ -332,10 +332,6 @@ export function StellarIgnition() {
         <p className="font-mono mt-2 text-[8px] tracking-[0.2em] text-[#4f565e]">{t('home.ignitePrimaryEn')}</p>
       </div>
 
-      {contractMode ? (
-        <p className="font-mono mt-5 text-[8px] tracking-[0.18em] text-[#5c656e]">{t('home.igniteSyncedChain')}</p>
-      ) : null}
-
       <div className="mt-5 grid gap-4 md:grid-cols-2 md:gap-6">
         <label className="block font-mono text-[8px] tracking-[0.18em] text-[#6a7179]">
           <span className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">

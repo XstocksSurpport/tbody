@@ -63,7 +63,6 @@ export type Dictionary = {
     igniteTxFailed: string;
     igniteProgressPerson: string;
     igniteProgressGlobal: string;
-    igniteSyncedChain: string;
     igniteAlreadyJoined: string;
     igniteGlobalPoolFull: string;
     eraCurrentLabel: string;
@@ -338,7 +337,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteTxFailed: 'Failed',
       igniteProgressPerson: 'Your spark (on-chain)',
       igniteProgressGlobal: 'Network spark pool (on-chain)',
-      igniteSyncedChain: 'Live from contract · refreshes with blocks',
       igniteAlreadyJoined:
         'This wallet already joined a civilization via mint(). Further ETH mints are disabled by contract.',
       igniteGlobalPoolFull: 'The on-chain total ETH pool for minting is full. Try a smaller amount later.',
@@ -659,7 +657,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteTxFailed: '失败',
       igniteProgressPerson: '个人火种占用（链上）',
       igniteProgressGlobal: '全网火种池（链上）',
-      igniteSyncedChain: '合约实时读取 · 随区块刷新',
       igniteAlreadyJoined: '该钱包已通过 mint 加入文明；合约禁止再次铸造。',
       igniteGlobalPoolFull: '链上全网 ETH 铸造池已满，请减少份数或稍后再试。',
       eraCurrentLabel: '当前纪元',

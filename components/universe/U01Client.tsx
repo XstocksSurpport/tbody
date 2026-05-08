@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AmbientAudio } from '@/components/AmbientAudio';
 import { useI18n } from '@/lib/i18n-context';
 import { mulberry32 } from '@/lib/sophonSeed';
+import { THREEBODY_ADDRESS } from '@/lib/threeBody';
 import './u01-shell.css';
 
 type EnergyKind = 'CONSISTENT' | 'NOMINAL' | 'BOUNDED';
@@ -44,40 +45,17 @@ function clamp(n: number, lo: number, hi: number) {
   return Math.min(hi, Math.max(lo, n));
 }
 
-function buildCodeLines(
-  r: {
-    vol: string;
-    energy: EnergyKind;
-    mint: string;
-    ts: string;
-  },
+function buildTerminalLines(
+  r: { ts: string },
   queryId: number,
   t: (path: string) => string
 ): string[] {
   const sess = `sess_${(queryId * 9973 + 8191).toString(16)}`;
-  const banner = t('u01.termBanner').replace(/\{\{sess\}\}/g, sess);
-  const energyJson = t(`u01.jsonEnergy.${r.energy}`);
-  const eraVal = t('u01.eraStable');
-  return [
-    banner,
-    t('u01.termSsh'),
-    t('u01.termWarnHostKey'),
-    t('u01.termAuth'),
-    '',
-    t('u01.termCmdRead'),
-    t('u01.termBraceOpen'),
-    `  "${t('u01.jsonKeyEra')}": "${eraVal}",`,
-    `  "${t('u01.jsonKeyVol')}": ${r.vol},`,
-    `  "${t('u01.jsonKeyEnergy')}": "${energyJson}",`,
-    `  "${t('u01.jsonKeyMint')}": ${r.mint},`,
-    `  "${t('u01.jsonKeyTs')}": "${r.ts}"`,
-    t('u01.termBraceClose'),
-    '',
-    t('u01.termCmdSha'),
-    t('u01.termShaOk'),
-    '',
-    t('u01.termReadDone'),
-  ];
+  const raw = t('u01.termStream')
+    .replace(/\{\{sess\}\}/g, sess)
+    .replace(/\{\{CONTRACT\}\}/g, THREEBODY_ADDRESS)
+    .replace(/\{\{TS\}\}/g, r.ts);
+  return raw.split('\n');
 }
 
 export function U01Client() {
@@ -107,7 +85,7 @@ export function U01Client() {
   }, [queryId]);
 
   const linesTemplate = useMemo(
-    () => buildCodeLines(readings, queryId, t),
+    () => buildTerminalLines(readings, queryId, t),
     [readings, queryId, t]
   );
 

@@ -61,7 +61,10 @@ const nextConfig = {
    * Always use ONE origin in the address bar; this config allows both hostnames.
    */
   ...(process.env.NODE_ENV !== 'production'
-    ? { allowedDevOrigins: ['127.0.0.1', 'localhost'] }
+    ? {
+        /** Include LAN / IPv6 hosts — wrong origin blocks `/_next/*` in dev → blank page + spinner. */
+        allowedDevOrigins: ['127.0.0.1', 'localhost', '[::1]'],
+      }
     : {}),
   webpack: (config, ctx) => {
     config.resolve.alias = {

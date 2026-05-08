@@ -69,6 +69,13 @@ function readSessionLocale(): Locale | null {
 let localeListeners = new Set<() => void>();
 let activeLocaleOverride: Locale | null = null;
 
+/**
+ * Until the first client `useLayoutEffect`, force locale snapshot = `null` so it matches
+ * `getServerLocaleSnapshot` during hydration. Reading sessionStorage / data-locale earlier
+ * breaks SSR ↔ client markup and can yield a blank screen (failed hydration + chunk reload loop).
+ */
+let i18nHydrationCommitted = false;
+
 function subscribeLocale(onStoreChange: () => void) {
   localeListeners.add(onStoreChange);
   return () => {
@@ -82,6 +89,7 @@ function notifyLocaleListeners() {
 
 function getClientLocaleSnapshot(): Locale | null {
   if (typeof window === 'undefined') return null;
+  if (!i18nHydrationCommitted) return null;
   if (activeLocaleOverride) return activeLocaleOverride;
   const fromHtml = readHtmlDataLocale();
   if (fromHtml) return fromHtml;
@@ -136,6 +144,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useLayoutEffect(() => {
     clearLegacyLocalePersistence();
+    i18nHydrationCommitted = true;
+    notifyLocaleListeners();
+    return () => {
+      i18nHydrationCommitted = false;
+    };
   }, []);
 
   useEffect(() => {

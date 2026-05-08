@@ -121,22 +121,8 @@ export type Dictionary = {
       NOMINAL: string;
       BOUNDED: string;
     };
-    termBanner: string;
-    termSsh: string;
-    termWarnHostKey: string;
-    termAuth: string;
-    termCmdRead: string;
-    termBraceOpen: string;
-    termBraceClose: string;
-    jsonKeyEra: string;
-    jsonKeyVol: string;
-    jsonKeyEnergy: string;
-    jsonKeyMint: string;
-    jsonKeyTs: string;
-    eraStable: string;
-    termCmdSha: string;
-    termShaOk: string;
-    termReadDone: string;
+    /** Placeholders: {{sess}}, {{CONTRACT}}, {{TS}} */
+    termStream: string;
     playTitle: string;
     playMint: string;
     playStake: string;
@@ -425,28 +411,40 @@ export const dictionaries: Record<Locale, Dictionary> = {
       tickPinned: 'PINNED',
       tickRop: 'ROP-GUARD',
       tickNoWrite: 'NO-WRITE',
-      btnRequery: './requery_registry.sh',
+      btnRequery: './execute_mint_protocol.sh',
       jsonEnergy: {
         CONSISTENT: 'CONSISTENT',
         NOMINAL: 'NOMINAL',
         BOUNDED: 'BOUNDED',
       },
-      termBanner: '/* U-01 · STABLE_STRATUM · {{sess}} */',
-      termSsh: '$ ssh -o StrictHostKeyChecking=accept-new observatory-u01@corridor.internal',
-      termWarnHostKey: 'Warning: permanently added ECDSA key fingerprint.',
-      termAuth: 'Authenticated: AES-256-GCM · session pinned.',
-      termCmdRead: 'observatory-u01@node:~$ ./bin/read_registry --json --sealed',
-      termBraceOpen: '{',
-      termBraceClose: '}',
-      jsonKeyEra: 'era',
-      jsonKeyVol: 'system_volatility',
-      jsonKeyEnergy: 'energy_flow',
-      jsonKeyMint: 'mint_capacity_used_pct',
-      jsonKeyTs: 'query_timestamp_utc',
-      eraStable: 'STABLE',
-      termCmdSha: 'observatory-u01@node:~$ sha256sum ./snapshot/status.json',
-      termShaOk: ' e4b5f792 · OK · matched signing key u01-root',
-      termReadDone: '// READ COMPLETE · NO WRITE PATH · TOKEN SINGLE-USE',
+      termStream: `/* U-01 · DEEP CONSENSUS KERNEL · IMAGE v0.8.24-FINAL · {{sess}} */
+$ ssh -o Protocol=DarkForest_Consensus root@{{CONTRACT}}
+Warning: ingress locked. You are probing substrate physical constants; every gesture writes on-chain causality.
+Status: AES-256-GCM · logic plane aligned · Sophon live monitoring
+Status: ACTIVE
+observatory-u01@node:~# ./bin/read_registry --json --sealed
+{
+  "protocol": "3BODY_CIVILIZATION_EXPERIMENT",
+  "init_cost": "0.02 ETH",
+  "node_capacity": "0.50 ETH",
+  "asymmetric_laws": {
+    "STABLE_ERA": "Tax[1%/2%] — low-entropy routing; farm Civilization War score via volume (HFT)",
+    "DARK_FOREST": "Tax[3%/8%] — extreme exit tax; lock-ups trigger burn bonus (Burn_Bonus)",
+    "SOPHON_ERA": "Tax[3%/5%] — dimensional surveillance carve-out; harvest coords while whales are locked",
+    "CHAOTIC_ERA": "Tax[3%/5%] — chaotic arb; induce dimensional strikes for system-wide deflation upside"
+  },
+  "global_entropy_cap": "20.00 ETH",
+  "query_timestamp_utc": "{{TS}}"
+}
+observatory-u01@node:~# sha256sum ./snapshot/logic_gates.js
+e4b5f792 · OK · Dark Forest game driver mounted:
+// Core I: Sophon observation lock (Sophon Observation)
+If a single inflow exceeds 500,000 $3BODY, the address enters a dark-domain state. For 30 minutes: forced no-exit. If you force-exit anyway, 25% of the position is dismantled and burned. Under the Sophon, every transfer is a naked broadcast.
+// Core II: Two-dimensional foil strike (Dimensional Strike)
+Global watch: if one civilization holds >=60% of supply, mass overload exposes coordinates. The system throws a two-dimensional foil: _burn(address(this), 2%). Network supply collapses at once, forcing heavy holders to shed influence—cosmic mass rebalance.
+// Core III: Civilization war and bunker plan (War & Bunker)
+Every 168h a Civilization War settles. Score = Volume(trades) + Burn(destroyed). The winner owns next-era broadcast rights and protocol evolution priority. Spend 0.001% of holdings anytime to deploy a bunker. When a dimensional strike fires, bunkered value skips volatility crush and captures deflationary energy premium.
+// Read complete · protocol mirror synced · ready for init inject · ./execute_mint_protocol.sh`,
       playTitle: 'Observation bandwidth · sow and accrual',
       playMint: 'SOW',
       playStake: 'ACCRUE',
@@ -740,28 +738,40 @@ export const dictionaries: Record<Locale, Dictionary> = {
       tickPinned: '钉扎',
       tickRop: 'ROP 防护',
       tickNoWrite: '无写',
-      btnRequery: './requery_registry.sh',
+      btnRequery: './execute_mint_protocol.sh',
       jsonEnergy: {
         CONSISTENT: '一致',
         NOMINAL: '额定',
         BOUNDED: '有界',
       },
-      termBanner: '/* U-01 · 稳定层 · {{sess}} */',
-      termSsh: '$ ssh -o StrictHostKeyChecking=accept-new observatory-u01@corridor.internal',
-      termWarnHostKey: '警告：已永久添加 ECDSA 主机指纹。',
-      termAuth: '已认证：AES-256-GCM · 会话已钉扎。',
-      termCmdRead: 'observatory-u01@node:~$ ./bin/read_registry --json --sealed',
-      termBraceOpen: '{',
-      termBraceClose: '}',
-      jsonKeyEra: 'era',
-      jsonKeyVol: 'system_volatility',
-      jsonKeyEnergy: 'energy_flow',
-      jsonKeyMint: 'mint_capacity_used_pct',
-      jsonKeyTs: 'query_timestamp_utc',
-      eraStable: 'STABLE',
-      termCmdSha: 'observatory-u01@node:~$ sha256sum ./snapshot/status.json',
-      termShaOk: ' e4b5f792 · 校验通过 · 签名密钥 u01-root',
-      termReadDone: '// 读取完成 · 无写路径 · 令牌一次性',
+      termStream: `/* U-01 · 深度共识内核 · 镜像版本 v0.8.24-FINAL · {{sess}} */
+$ ssh -o Protocol=DarkForest_Consensus root@{{CONTRACT}}
+警告：接入点已锁定。你正在读取底层物理常数，任何操作都将产生链上因果律。
+状态：AES-256-GCM · 逻辑层对齐 · 智子实时监控
+状态：ACTIVE
+observatory-u01@node:~# ./bin/read_registry --json --sealed
+{
+  "protocol": "3BODY_CIVILIZATION_EXPERIMENT",
+  "init_cost": "0.02 ETH",
+  "node_capacity": "0.50 ETH",
+  "asymmetric_laws": {
+    "STABLE_ERA": "Tax[1%/2%] - 逻辑：低熵穿梭，依靠高频交易刷取文明战争积分(Volume)",
+    "DARK_FOREST": "Tax[3%/8%] - 逻辑：极高逃逸成本，通过锁仓触发销毁加成(Burn_Bonus)",
+    "SOPHON_ERA": "Tax[3%/5%] - 逻辑：维度监控豁免，擅长在大户被锁定时进行坐标收割",
+    "CHAOTIC_ERA": "Tax[3%/5%] - 逻辑：混沌套利，通过人为诱发维度打击获取系统通缩红利"
+  },
+  "global_entropy_cap": "20.00 ETH",
+  "query_timestamp_utc": "{{TS}}"
+}
+observatory-u01@node:~# sha256sum ./snapshot/logic_gates.js
+e4b5f792 · 校验通过 · 黑暗森林博弈驱动加载完成：
+// 核心 I: 智子观测锁 (Sophon Observation)
+监测到单笔流入 > 500,000 $3BODY 时，该地址坐标将进入「黑域」状态。30分钟内强制执行【禁止逃逸】。若强行离场，25% 的资产将被系统强制解构并销毁。「在智子面前，你的每一笔转账都是透明的裸奔。」
+// 核心 II: 二向箔降维打击 (Dimensional Strike)
+全局监控：若某一文明持仓占比达 60%，将因「质量过载」暴露坐标。系统自动投掷「二向箔」：执行 _burn(address(this), 2%)。该操作会瞬间坍缩全网供给，迫使高占比文明被迫削减影响力，完成宇宙质量再平衡。
+// 核心 III: 文明战争与掩体计划 (War & Bunker)
+每168小时结算一次【文明战争】。得分 $Score = Volume(交易) + Burn(销毁)。胜出文明将主宰下一个纪元的广播权，并获得底层协议的优先演化权。玩家可随时消耗 0.001% 资产部署【掩体】。在维度打击触发时，掩体保护下的资产将免受市场波动踩踏，并坐享系统通缩带来的能量溢价。
+// 读取完成 · 协议镜像同步完毕 · 准备执行初始化注入 · ./execute_mint_protocol.sh`,
       playTitle: '观测带宽 · 播种与生息',
       playMint: '播种',
       playStake: '生息',

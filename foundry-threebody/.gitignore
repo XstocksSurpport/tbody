@@ -2,3 +2,6 @@ cache/
 out/
 broadcast/
 lib/
+node_modules/
+artifacts/
+hh-cache/

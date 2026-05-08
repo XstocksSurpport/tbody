@@ -5,7 +5,7 @@ import { Providers } from '@/components/Providers';
 
 /** Home hero lines (`home.subtitle` EN/ZH) — bilingual tab/social preview. */
 const SITE_TAGLINE =
-  '4 PARALLEL CIVILIZATIONS DETECTED · 检测到 4 条并行文明时间线 — Civilization observation interface · 文明观测界面';
+  'STELLAR IGNITION · ON-CHAIN SPARK · FOUR CIVILIZATION CORRIDORS · 恒星点燃 · 链上火种 · 四条走廊 — observation terminal · 观测终端';
 
 export const metadata: Metadata = {
   title: { default: '3BODY', template: '%s · 3BODY' },
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '3BODY',
     description:
-      '4 PARALLEL CIVILIZATIONS DETECTED · 检测到 4 条并行文明时间线 — Civilization observation interface · 文明观测界面',
+      'STELLAR IGNITION · ON-CHAIN SPARK · FOUR PARALLEL CIVILIZATION CORRIDORS · 恒星点燃 · 链上火种 · 四条并行走廊 — observation terminal · 观测终端',
     locale: 'en_US',
     alternateLocale: ['zh_CN'],
     type: 'website',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: '3BODY',
     description:
-      '4 PARALLEL CIVILIZATIONS DETECTED · 检测到 4 条并行文明时间线 — Civilization observation interface · 文明观测界面',
+      'STELLAR IGNITION · ON-CHAIN SPARK · FOUR CIVILIZATION CORRIDORS · 恒星点燃 · 链上火种 · 四条走廊 — observation terminal · 观测终端',
   },
   other: { 'content-language': 'en' },
 };

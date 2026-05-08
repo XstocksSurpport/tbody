@@ -59,6 +59,11 @@ export type Dictionary = {
     ignitePending: string;
     igniteSuccess: string;
     igniteTxFailed: string;
+    igniteProgressPerson: string;
+    igniteProgressGlobal: string;
+    igniteSyncedChain: string;
+    igniteAlreadyJoined: string;
+    igniteGlobalPoolFull: string;
     eraCurrentLabel: string;
     eraNextLabel: string;
     manifestLine: string;
@@ -293,7 +298,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       uplink: 'UPLINK OK',
       coordLine: 'COORDINATE FRAME · SOL III · NEIGHBORING CLUSTER',
       title: '3BODY',
-      subtitle: '4 PARALLEL CIVILIZATIONS DETECTED',
+      subtitle: 'STELLAR IGNITION · ON-CHAIN SPARK · 4 CIVILIZATION CORRIDORS',
       sessionBar: 'SESSION · READ ONLY',
       parallelChannels: 'PARALLEL CHANNELS',
       routing: 'ROUTING',
@@ -318,8 +323,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteRemainingUnit: 'ETH',
       ignitePrimary: 'Ignite',
       ignitePrimaryEn: 'STELLAR IGNITION',
-      igniteNeedWallet: 'Connect a wallet on Ethereum mainnet first.',
-      igniteWrongChain: 'Switch your wallet to Ethereum mainnet before igniting.',
+      igniteNeedWallet: 'Connect a wallet first.',
+      igniteWrongChain:
+        'Switch your wallet to the network where 3BODY is deployed (see NEXT_PUBLIC_THREEBODY_CHAIN_ID).',
       igniteNeedRecipient:
         'Treasury address invalid. Check NEXT_PUBLIC_STELLAR_RECIPIENT override.',
       igniteInvalidShares: 'Enter a positive integer within your remaining allowance.',
@@ -327,6 +333,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       ignitePending: 'Awaiting wallet confirmation…',
       igniteSuccess: 'Ignition confirmed on-chain — thank you, Observer.',
       igniteTxFailed: 'Failed',
+      igniteProgressPerson: 'Your spark (on-chain)',
+      igniteProgressGlobal: 'Network spark pool (on-chain)',
+      igniteSyncedChain: 'Live from contract · refreshes with blocks',
+      igniteAlreadyJoined:
+        'This wallet already joined a civilization via mint(). Further ETH mints are disabled by contract.',
+      igniteGlobalPoolFull: 'The on-chain total ETH pool for minting is full. Try a smaller amount later.',
       eraCurrentLabel: 'CURRENT ERA',
       eraNextLabel: 'TIME TO NEXT ERA',
       manifestLine: 'Inside the light cone, fate is sealed.',
@@ -606,7 +618,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       uplink: '上行链路正常',
       coordLine: '坐标系 · 太阳系第三行星 · 邻近星团参照',
       title: '3BODY',
-      subtitle: '检测到 4 条并行文明时间线',
+      subtitle: '恒星点燃 · 链上火种 · 四条文明走廊',
       sessionBar: '会话 · 只读',
       parallelChannels: '并行信道',
       routing: '路由',
@@ -631,8 +643,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteRemainingUnit: 'ETH',
       ignitePrimary: '恒星点燃',
       ignitePrimaryEn: 'STELLAR IGNITION',
-      igniteNeedWallet: '请先连接以太坊主网钱包。',
-      igniteWrongChain: '请先在钱包中切换到以太坊主网再点燃。',
+      igniteNeedWallet: '请先连接钱包。',
+      igniteWrongChain:
+        '请切换到 3BODY 合约所在网络（见 NEXT_PUBLIC_THREEBODY_CHAIN_ID）。',
       igniteNeedRecipient:
         '收款地址无效，请检查 NEXT_PUBLIC_STELLAR_RECIPIENT 覆盖配置。',
       igniteInvalidShares: '请输入不超过剩余额度的正整数份数。',
@@ -640,6 +653,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       ignitePending: '等待钱包确认…',
       igniteSuccess: '链上已确认——感谢，观测者。',
       igniteTxFailed: '失败',
+      igniteProgressPerson: '个人火种占用（链上）',
+      igniteProgressGlobal: '全网火种池（链上）',
+      igniteSyncedChain: '合约实时读取 · 随区块刷新',
+      igniteAlreadyJoined: '该钱包已通过 mint 加入文明；合约禁止再次铸造。',
+      igniteGlobalPoolFull: '链上全网 ETH 铸造池已满，请减少份数或稍后再试。',
       eraCurrentLabel: '当前纪元',
       eraNextLabel: '距离下一纪元',
       manifestLine: '光锥之内，即是命运。',

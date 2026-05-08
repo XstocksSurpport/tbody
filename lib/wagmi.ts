@@ -1,17 +1,27 @@
 import { createConfig, fallback, http } from 'wagmi';
-import { mainnet } from 'wagmi/chains';
+import { mainnet, sepolia } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 
 /** Prefer NEXT_PUBLIC_MAINNET_RPC (Alchemy/Infura/etc.); public endpoints often rate-limit. */
-const envRpc =
+const envMainnetRpc =
   typeof process !== 'undefined' && process.env.NEXT_PUBLIC_MAINNET_RPC
     ? process.env.NEXT_PUBLIC_MAINNET_RPC.trim()
+    : '';
+
+const envSepoliaRpc =
+  typeof process !== 'undefined' && process.env.NEXT_PUBLIC_SEPOLIA_RPC
+    ? process.env.NEXT_PUBLIC_SEPOLIA_RPC.trim()
     : '';
 
 const PUBLIC_MAINNET_RPCS = [
   'https://ethereum.publicnode.com',
   'https://eth.llamarpc.com',
   'https://rpc.ankr.com/eth',
+] as const;
+
+const PUBLIC_SEPOLIA_RPCS = [
+  'https://ethereum-sepolia.publicnode.com',
+  'https://rpc2.sepolia.org',
 ] as const;
 
 function uniqueRpcOrder(...groups: (readonly string[] | string)[]): string[] {
@@ -30,8 +40,19 @@ function uniqueRpcOrder(...groups: (readonly string[] | string)[]): string[] {
 }
 
 const mainnetTransports = uniqueRpcOrder(
-  envRpc ? [envRpc] : [],
+  envMainnetRpc ? [envMainnetRpc] : [],
   PUBLIC_MAINNET_RPCS,
+).map((url) =>
+  http(url, {
+    batch: true,
+    retryCount: 2,
+    timeout: 20_000,
+  }),
+);
+
+const sepoliaTransports = uniqueRpcOrder(
+  envSepoliaRpc ? [envSepoliaRpc] : [],
+  PUBLIC_SEPOLIA_RPCS,
 ).map((url) =>
   http(url, {
     batch: true,
@@ -45,10 +66,11 @@ const mainnetTransports = uniqueRpcOrder(
  * a frequent source of runtime crashes / hydration faults with Next App Router.
  */
 export const wagmiConfig = createConfig({
-  chains: [mainnet],
+  chains: [mainnet, sepolia],
   connectors: [injected()],
   transports: {
     [mainnet.id]: fallback(mainnetTransports, { rank: false }),
+    [sepolia.id]: fallback(sepoliaTransports, { rank: false }),
   },
   ssr: false,
 });

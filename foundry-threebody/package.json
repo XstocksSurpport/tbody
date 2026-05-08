@@ -1,0 +1,16 @@
+{
+  "name": "threebody-contracts",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:sepolia": "hardhat run scripts/deploy.cjs --network sepolia",
+    "verify:sepolia": "hardhat verify --network sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.2.1",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.17"
+  }
+}

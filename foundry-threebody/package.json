@@ -6,6 +6,7 @@
     "compile": "hardhat compile",
     "deploy:mainnet": "hardhat run scripts/deploy.cjs --network mainnet",
     "verify:mainnet": "hardhat verify --network mainnet",
+    "verify:etherscan-http": "node scripts/verify-etherscan-http.cjs",
     "deploy:sepolia": "hardhat run scripts/deploy.cjs --network sepolia",
     "verify:sepolia": "hardhat verify --network sepolia"
   },

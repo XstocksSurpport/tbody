@@ -32,6 +32,14 @@ Publish source on Etherscan:
 npx hardhat verify --network mainnet <deployed_address>
 ```
 
+If `hardhat verify` times out (large standard-json upload), use the extended-timeout helper:
+
+```bash
+node scripts/verify-etherscan-http.cjs <deployed_address>
+```
+
+**If verification always fails with timeout / ETIMEDOUT:** check DNS — `api.etherscan.io` must resolve to Etherscan’s servers (not `173.252.x.x` Facebook/Meta ranges). Switch Windows DNS to **1.1.1.1** / **8.8.8.8**, run `ipconfig /flushdns`, retry. Or verify manually: open [contract → Contract → Verify](https://etherscan.io/verifyContract), use compiler **0.8.24**, **standard-json-input** from `artifacts/build-info/*.json` field `input`.
+
 Then set **`NEXT_PUBLIC_THREEBODY_ADDRESS`** in the Next app to that address (mainnet only; chain id **1**).
 
 **Latest mainnet deployment (reference):** `0xf35Ad0Bc6E7bbeDFC2bc8AcB18864B74dFE3D547` — confirm on [Etherscan](https://etherscan.io/address/0xf35Ad0Bc6E7bbeDFC2bc8AcB18864B74dFE3D547) before relying on it.

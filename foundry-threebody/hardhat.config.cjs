@@ -60,6 +60,12 @@ const pk = normalizePk(
     process.env['Private Key']
 );
 
+const mainnetRpc =
+  process.env.MAINNET_RPC_URL?.trim() ||
+  process.env.NEXT_PUBLIC_MAINNET_RPC?.trim() ||
+  process.env.ETH_RPC_URL?.trim() ||
+  'https://ethereum.publicnode.com';
+
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
@@ -78,8 +84,11 @@ module.exports = {
       accounts: pk ? [pk] : [],
     },
     mainnet: {
-      url: process.env.MAINNET_RPC_URL || '',
+      url: mainnetRpc,
       accounts: pk ? [pk] : [],
     },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY || '',
   },
 };

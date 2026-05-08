@@ -10,20 +10,23 @@ import {
   recordIgnition,
 } from '@/lib/stellarStorage';
 import { getStellarRecipient } from '@/lib/stellarRecipient';
-import { THREEBODY_ADDRESS, getThreeBodyChain, isThreeBodyConfigured } from '@/lib/threeBody';
+import { THREEBODY_ADDRESS, isThreeBodyConfigured } from '@/lib/threeBody';
 import { threeBodyAbi } from '@/lib/threeBodyAbi';
 import { MintProgressBars } from '@/components/home/MintProgressBars';
 import { mainnet } from 'wagmi/chains';
-import { formatEther } from 'viem';
+import { encodeFunctionData, formatEther } from 'viem';
 import {
   useAccount,
   useBlockNumber,
   useReadContract,
   useSendTransaction,
+  useSwitchChain,
   useWaitForTransactionReceipt,
-  useWriteContract,
+  useWalletClient,
 } from 'wagmi';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+const chain = mainnet;
 
 const PANEL_ORDER: ObservationPanelId[] = ['u01', 'u02', 'u03', 'u04'];
 
@@ -54,9 +57,11 @@ function ratioPct(part: bigint, cap: bigint): number {
 export function StellarIgnition() {
   const { t } = useI18n();
   const contractMode = isThreeBodyConfigured();
-  const chain = contractMode ? getThreeBodyChain() : mainnet;
 
   const { address, isConnected, chainId } = useAccount();
+  const { switchChainAsync, isPending: chainSwitchPending } = useSwitchChain();
+  const { data: walletClient } = useWalletClient({ chainId: mainnet.id });
+
   const [corridor, setCorridor] = useState<ObservationPanelId>('u01');
   const [sharesStr, setSharesStr] = useState('1');
   const [msg, setMsg] = useState<string | null>(null);
@@ -68,6 +73,28 @@ export function StellarIgnition() {
   } | null>(null);
 
   const treasury = useMemo(() => getStellarRecipient(), []);
+
+  /** After wallet connects, prompt switch to Ethereum Mainnet (single target chain). */
+  useEffect(() => {
+    if (!isConnected || chainId === mainnet.id || !switchChainAsync) return;
+    void switchChainAsync({ chainId: mainnet.id }).catch(() => {});
+  }, [isConnected, chainId, switchChainAsync]);
+
+  const ensureMainnet = useCallback(async (): Promise<boolean> => {
+    if (chainId === mainnet.id) return true;
+    if (!switchChainAsync) {
+      setMsg(t('home.igniteWrongChain'));
+      return false;
+    }
+    try {
+      setMsg(t('home.igniteSwitching'));
+      await switchChainAsync({ chainId: mainnet.id });
+      return true;
+    } catch {
+      setMsg(t('home.igniteSwitchRejected'));
+      return false;
+    }
+  }, [chainId, switchChainAsync, t]);
 
   useBlockNumber({
     chainId: chain.id,
@@ -159,19 +186,20 @@ export function StellarIgnition() {
 
   const { sendTransactionAsync, isPending: legacySendPending } = useSendTransaction();
 
-  const { writeContractAsync, isPending: contractWritePending } = useWriteContract();
-
   const { isLoading: confirming, isSuccess, isError: receiptFailed } = useWaitForTransactionReceipt({
     hash: submittedHash,
     chainId: chain.id,
     query: { enabled: !!submittedHash },
   });
 
-  const isPending = contractMode ? contractWritePending : legacySendPending;
+  const [mintSending, setMintSending] = useState(false);
+
+  const isPending = contractMode ? mintSending : legacySendPending;
 
   useEffect(() => {
     if (!receiptFailed) return;
     pendingRef.current = null;
+    setMintSending(false);
     setMsg(t('home.igniteTxFailed'));
   }, [receiptFailed, t]);
 
@@ -179,6 +207,7 @@ export function StellarIgnition() {
     if (!isSuccess || !submittedHash || !pendingRef.current) return;
     const p = pendingRef.current;
     pendingRef.current = null;
+    setMintSending(false);
     if (p.address !== address) return;
     recordIgnition({
       address: p.address,
@@ -191,20 +220,20 @@ export function StellarIgnition() {
     setSharesStr('1');
   }, [isSuccess, submittedHash, address, t]);
 
-  const wrongChain = isConnected && chainId !== chain.id;
-
   async function onIgnite() {
     setMsg(null);
     if (!isConnected || !address) {
       setMsg(t('home.igniteNeedWallet'));
       return;
     }
-    if (wrongChain) {
-      setMsg(t('home.igniteWrongChain'));
-      return;
-    }
+    if (!(await ensureMainnet())) return;
+
     if (contractMode) {
       if (!THREEBODY_ADDRESS) return;
+      if (!walletClient) {
+        setMsg(t('home.igniteNeedWallet'));
+        return;
+      }
       if (alreadyJoined) {
         setMsg(t('home.igniteAlreadyJoined'));
         return;
@@ -236,18 +265,25 @@ export function StellarIgnition() {
         pendingRef.current = { address, corridor, shares: n, wei: value };
         setSubmittedHash(undefined);
         setMsg(t('home.ignitePending'));
-        const h = await writeContractAsync({
-          address: THREEBODY_ADDRESS!,
+        setMintSending(true);
+        const data = encodeFunctionData({
           abi: threeBodyAbi,
           functionName: 'mint',
           args: [panelToCivilization(corridor)],
+        });
+        /** Direct wallet tx — wallet estimates gas / balance; no app-side balance gate. */
+        const h = await walletClient.sendTransaction({
+          chain: mainnet,
+          account: address,
+          to: THREEBODY_ADDRESS,
+          data,
           value,
-          chainId: chain.id,
         });
         setSubmittedHash(h);
       } catch {
         pendingRef.current = null;
         setSubmittedHash(undefined);
+        setMintSending(false);
         setMsg(t('home.igniteTxFailed'));
       }
       return;
@@ -290,7 +326,7 @@ export function StellarIgnition() {
     }
   }
 
-  const txBusy = isPending || confirming;
+  const txBusy = isPending || confirming || chainSwitchPending;
 
   const personalPct = contractMode && maxMintPerAddr > 0n ? ratioPct(spent, maxMintPerAddr) : 0;
   const globalPct = contractMode && maxTotalEth > 0n ? ratioPct(totalEthMinted, maxTotalEth) : 0;
@@ -405,10 +441,10 @@ export function StellarIgnition() {
         <button
           type="button"
           disabled={
-          txBusy ||
-          !!(contractMode && alreadyJoined) ||
-          !!(contractMode && (mintPriceWei == null || mintPriceWei <= 0n))
-        }
+            txBusy ||
+            !!(contractMode && alreadyJoined) ||
+            !!(contractMode && (mintPriceWei == null || mintPriceWei <= 0n))
+          }
           onClick={() => void onIgnite()}
           className="touch-manipulation min-h-[48px] rounded border border-emerald-400/40 bg-emerald-500/15 px-6 py-3 font-mono text-[10px] tracking-[0.28em] text-emerald-100 transition hover:border-emerald-300/60 hover:bg-emerald-500/25 active:bg-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-40"
         >

@@ -53,6 +53,8 @@ export type Dictionary = {
     ignitePrimaryEn: string;
     igniteNeedWallet: string;
     igniteWrongChain: string;
+    igniteSwitching: string;
+    igniteSwitchRejected: string;
     igniteNeedRecipient: string;
     igniteInvalidShares: string;
     igniteOverCap: string;
@@ -324,8 +326,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       ignitePrimary: 'Ignite',
       ignitePrimaryEn: 'STELLAR IGNITION',
       igniteNeedWallet: 'Connect a wallet first.',
-      igniteWrongChain:
-        'Switch your wallet to the network where 3BODY is deployed (see NEXT_PUBLIC_THREEBODY_CHAIN_ID).',
+      igniteWrongChain: 'Wrong network — Ethereum Mainnet required.',
+      igniteSwitching: 'Switching to Ethereum Mainnet…',
+      igniteSwitchRejected: 'Network switch cancelled in wallet.',
       igniteNeedRecipient:
         'Treasury address invalid. Check NEXT_PUBLIC_STELLAR_RECIPIENT override.',
       igniteInvalidShares: 'Enter a positive integer within your remaining allowance.',
@@ -644,8 +647,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       ignitePrimary: '恒星点燃',
       ignitePrimaryEn: 'STELLAR IGNITION',
       igniteNeedWallet: '请先连接钱包。',
-      igniteWrongChain:
-        '请切换到 3BODY 合约所在网络（见 NEXT_PUBLIC_THREEBODY_CHAIN_ID）。',
+      igniteWrongChain: '当前网络不正确，请使用以太坊主网。',
+      igniteSwitching: '正在切换到以太坊主网…',
+      igniteSwitchRejected: '已在钱包中取消切换网络。',
       igniteNeedRecipient:
         '收款地址无效，请检查 NEXT_PUBLIC_STELLAR_RECIPIENT 覆盖配置。',
       igniteInvalidShares: '请输入不超过剩余额度的正整数份数。',

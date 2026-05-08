@@ -1,5 +1,5 @@
 import { createConfig, fallback, http } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 
 /** Prefer NEXT_PUBLIC_MAINNET_RPC (Alchemy/Infura/etc.); public endpoints often rate-limit. */
@@ -8,20 +8,10 @@ const envMainnetRpc =
     ? process.env.NEXT_PUBLIC_MAINNET_RPC.trim()
     : '';
 
-const envSepoliaRpc =
-  typeof process !== 'undefined' && process.env.NEXT_PUBLIC_SEPOLIA_RPC
-    ? process.env.NEXT_PUBLIC_SEPOLIA_RPC.trim()
-    : '';
-
 const PUBLIC_MAINNET_RPCS = [
   'https://ethereum.publicnode.com',
   'https://eth.llamarpc.com',
   'https://rpc.ankr.com/eth',
-] as const;
-
-const PUBLIC_SEPOLIA_RPCS = [
-  'https://ethereum-sepolia.publicnode.com',
-  'https://rpc2.sepolia.org',
 ] as const;
 
 function uniqueRpcOrder(...groups: (readonly string[] | string)[]): string[] {
@@ -50,27 +40,15 @@ const mainnetTransports = uniqueRpcOrder(
   }),
 );
 
-const sepoliaTransports = uniqueRpcOrder(
-  envSepoliaRpc ? [envSepoliaRpc] : [],
-  PUBLIC_SEPOLIA_RPCS,
-).map((url) =>
-  http(url, {
-    batch: true,
-    retryCount: 2,
-    timeout: 20_000,
-  }),
-);
-
 /**
- * Client-first setup (ssr: false) avoids server/layout importing wagmi cookie hydration —
- * a frequent source of runtime crashes / hydration faults with Next App Router.
+ * Single chain: Ethereum mainnet only — dapp + contract target.
+ * Client-first setup (ssr: false) avoids server/layout importing wagmi cookie hydration.
  */
 export const wagmiConfig = createConfig({
-  chains: [mainnet, sepolia],
+  chains: [mainnet],
   connectors: [injected()],
   transports: {
     [mainnet.id]: fallback(mainnetTransports, { rank: false }),
-    [sepolia.id]: fallback(sepoliaTransports, { rank: false }),
   },
   ssr: false,
 });

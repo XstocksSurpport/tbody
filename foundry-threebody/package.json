@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "compile": "hardhat compile",
+    "deploy:mainnet": "hardhat run scripts/deploy.cjs --network mainnet",
+    "verify:mainnet": "hardhat verify --network mainnet",
     "deploy:sepolia": "hardhat run scripts/deploy.cjs --network sepolia",
     "verify:sepolia": "hardhat verify --network sepolia"
   },

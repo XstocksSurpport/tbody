@@ -1,6 +1,6 @@
 /**
- * Deploy ThreeBody — reads PRIVATE_KEY + SEPOLIA_RPC_URL from process.env (via hardhat.config dotenv).
- * Usage: npx hardhat run scripts/deploy.cjs --network sepolia
+ * Deploy ThreeBody — reads PRIVATE_KEY + RPC from .env (via hardhat.config).
+ * Usage: npx hardhat run scripts/deploy.cjs --network mainnet
  */
 
 async function main() {
@@ -27,10 +27,8 @@ async function main() {
   const addr = await contract.getAddress();
   console.info('Deployed at:', addr);
 
-  console.info('\nVerify on Sepolia Etherscan (example):');
-  console.info(
-    `npx hardhat verify --network sepolia ${addr}`
-  );
+  console.info('\nVerify on Etherscan (contract source):');
+  console.info(`npx hardhat verify --network mainnet ${addr}`);
 }
 
 main().catch((e) => {

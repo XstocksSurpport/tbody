@@ -1,6 +1,6 @@
-import { mainnet, sepolia, type Chain } from 'wagmi/chains';
+import { mainnet, type Chain } from 'wagmi/chains';
 
-/** Set `NEXT_PUBLIC_THREEBODY_ADDRESS` to enable on-chain mint + live progress. */
+/** Set `NEXT_PUBLIC_THREEBODY_ADDRESS` to enable on-chain `mint` + live progress. */
 export const THREEBODY_ADDRESS = (() => {
   const raw = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_THREEBODY_ADDRESS?.trim() : '';
   if (!raw || !/^0x[a-fA-F0-9]{40}$/.test(raw)) return undefined;
@@ -11,9 +11,7 @@ export function isThreeBodyConfigured(): boolean {
   return !!THREEBODY_ADDRESS;
 }
 
-/** Chain where the ThreeBody contract is deployed (`11155111` = Sepolia, `1` = mainnet). */
+/** 3BODY is deployed on Ethereum mainnet only. */
 export function getThreeBodyChain(): Chain {
-  const id = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_THREEBODY_CHAIN_ID?.trim() : '';
-  if (id === '11155111') return sepolia;
   return mainnet;
 }

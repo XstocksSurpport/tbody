@@ -278,6 +278,29 @@ export function HomeView() {
             <div>{t('home.migration1')}</div>
             <div className="mt-3">{t('home.migration2')}</div>
           </div>
+          <div className="mx-auto mt-14 flex flex-col items-center gap-8">
+            <div
+              className="h-px w-16 bg-gradient-to-r from-transparent via-white/[0.14] to-transparent"
+              aria-hidden
+            />
+            <a
+              href="https://x.com/3body_ca"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t('home.socialXLabel')}
+              className="group relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.08] bg-[radial-gradient(ellipse_90%_90%_at_50%_40%,rgba(255,255,255,0.06)_0%,transparent_72%)] text-[#7a828c] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-[color,border-color,box-shadow,transform] duration-500 hover:border-white/[0.18] hover:text-[#d7dde4] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_0_24px_rgba(255,255,255,0.04)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-white/25 active:scale-[0.98] motion-reduce:transition-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-[15px] w-[15px] opacity-[0.92] transition-opacity duration-300 group-hover:opacity-100"
+                aria-hidden
+              >
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+          </div>
         </footer>
       </main>
     </div>

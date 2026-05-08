@@ -37,6 +37,8 @@ export type Dictionary = {
     enter: string;
     migration1: string;
     migration2: string;
+    /** `aria-label` for footer X link (no visible caption). */
+    socialXLabel: string;
     walletConnect: string;
     walletDisconnect: string;
     igniteTitle: string;
@@ -296,6 +298,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       enter: 'ENTER →',
       migration1: 'RESIST CIVILIZATION INTRUSION',
       migration2: 'NOT YET INITIALIZED',
+      socialXLabel: '@3body_ca on X',
       walletConnect: 'CONNECT WALLET',
       walletDisconnect: 'DISCONNECT',
       igniteTitle: 'STELLAR IGNITION',
@@ -628,6 +631,7 @@ Every 168h a Civilization War settles. Score = Volume(trades) + Burn(destroyed).
       enter: '进入 →',
       migration1: '抵抗文明入侵',
       migration2: '尚未初始化',
+      socialXLabel: 'X · @3body_ca',
       walletConnect: '连接钱包',
       walletDisconnect: '断开',
       igniteTitle: '恒星点燃',

@@ -1,9 +1,11 @@
 'use client';
 
-import { stripBasePath, withBasePath } from '@/lib/basePath';
+import { isSafeInternalHref, routesMatchLocation } from '@/lib/app-nav';
+import { withBasePath } from '@/lib/basePath';
 import { useRouter } from 'next/navigation';
 import {
   useEffect,
+  useRef,
   type AnchorHTMLAttributes,
   type FocusEvent,
   type MouseEvent,
@@ -11,13 +13,6 @@ import {
 } from 'react';
 
 const warmedHrefs = new Set<string>();
-
-function normalizeRoutePath(p: string) {
-  if (!p) return '/';
-  let x = p.startsWith('/') ? p : `/${p}`;
-  if (x.length > 1 && x.endsWith('/')) x = x.slice(0, -1);
-  return x;
-}
 
 function isPlainPrimaryClick(e: MouseEvent<HTMLAnchorElement>) {
   if (e.defaultPrevented) return false;
@@ -28,6 +23,7 @@ function isPlainPrimaryClick(e: MouseEvent<HTMLAnchorElement>) {
 }
 
 function warmHref(router: ReturnType<typeof useRouter>, href: string) {
+  if (!isSafeInternalHref(href)) return;
   try {
     router.prefetch(href);
   } catch {
@@ -51,10 +47,19 @@ export function InstantNavLink({
   ...rest
 }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
   const router = useRouter();
+  const navBusy = useRef(false);
+  const fallbackTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    if (!isSafeInternalHref(href)) return;
     warmHref(router, href);
   }, [href, router]);
+
+  useEffect(() => {
+    return () => {
+      if (fallbackTimer.current !== undefined) window.clearTimeout(fallbackTimer.current);
+    };
+  }, []);
 
   const handlePointerDown = (e: PointerEvent<HTMLAnchorElement>) => {
     onPointerDown?.(e);
@@ -70,25 +75,43 @@ export function InstantNavLink({
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
+    if (!isSafeInternalHref(href)) {
+      e.preventDefault();
+      return;
+    }
     if (!isPlainPrimaryClick(e)) return;
+    if (navBusy.current) {
+      e.preventDefault();
+      return;
+    }
 
     e.preventDefault();
     e.stopPropagation();
-    warmHref(router, href);
-    router.push(href);
 
+    navBusy.current = true;
+    warmHref(router, href);
+
+    router.push(href);
     window.setTimeout(() => {
-      const cur = normalizeRoutePath(stripBasePath(window.location.pathname));
-      const want = normalizeRoutePath(href);
-      if (cur !== want) {
+      navBusy.current = false;
+    }, 320);
+
+    if (fallbackTimer.current !== undefined) window.clearTimeout(fallbackTimer.current);
+    fallbackTimer.current = window.setTimeout(() => {
+      fallbackTimer.current = undefined;
+      if (typeof window === 'undefined') return;
+      if (!routesMatchLocation(window.location.pathname, href)) {
         window.location.assign(withBasePath(href));
       }
     }, 4500);
   };
 
+  const safe = isSafeInternalHref(href);
+
   return (
     <a
-      href={withBasePath(href)}
+      href={safe ? withBasePath(href) : '#'}
+      aria-disabled={!safe}
       onClick={handleClick}
       onFocus={handleFocus}
       onPointerDown={handlePointerDown}

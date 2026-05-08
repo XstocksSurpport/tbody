@@ -1,6 +1,7 @@
 'use client';
 
 import type { AnchorHTMLAttributes, MouseEvent } from 'react';
+import { isSafeInternalHref } from '@/lib/app-nav';
 import { stripBasePath, withBasePath } from '@/lib/basePath';
 
 const LOCALE_KEY = '3body-locale';
@@ -38,7 +39,12 @@ function withHomeLangHint(href: string): string {
   }
 }
 
+let hardNavBusyUntil = 0;
+
 function navigateHard(href: string) {
+  const now = Date.now();
+  if (now < hardNavBusyUntil) return;
+  hardNavBusyUntil = now + 420;
   const next = withHomeLangHint(href);
   window.location.assign(next);
   window.setTimeout(() => {
@@ -64,10 +70,18 @@ export function HardNavLink({
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (e.button !== 0) return;
     if (e.currentTarget.getAttribute('target') === '_blank') return;
+    const raw = typeof href === 'string' ? href : '';
+    const targetHref = raw.startsWith('/') ? raw : `/${raw}`;
+    if (!isSafeInternalHref(targetHref)) return;
     e.preventDefault();
     e.stopPropagation();
-    navigateHard(href);
+    navigateHard(targetHref);
   };
 
-  return <a href={withBasePath(href.startsWith('/') ? href : `/${href}`)} onClick={handleClick} {...rest} />;
+  const raw = typeof href === 'string' ? href : '';
+  const safeHref = raw.startsWith('/') ? raw : `/${raw}`;
+  const safe = isSafeInternalHref(safeHref);
+  const anchorHref = safe ? withBasePath(safeHref) : '#';
+
+  return <a href={anchorHref} aria-disabled={!safe} onClick={handleClick} {...rest} />;
 }

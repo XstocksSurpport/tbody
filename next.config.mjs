@@ -1,3 +1,6 @@
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 const staticExport = process.env.STATIC_EXPORT === '1';
 /** GitHub Pages project URL prefix, e.g. `/tbody` for `user.github.io/tbody/` */
 const pagesBase = (process.env.PAGES_BASE_PATH || '').trim();
@@ -75,6 +78,54 @@ const nextConfig = {
         poll: 1000,
         aggregateTimeout: 400,
       };
+    }
+
+    /**
+     * Extra string-array obfuscation for prod client bundles only (slows casual copying; does not
+     * secure secrets — browser JS remains downloadable). Set `NEXT_DISABLE_OBFUSCATION=1` to skip.
+     */
+    if (
+      process.env.NODE_ENV === 'production' &&
+      !ctx.dev &&
+      !ctx.isServer &&
+      process.env.NEXT_DISABLE_OBFUSCATION !== '1'
+    ) {
+      try {
+        const WebpackObfuscatorPlugin = require('webpack-obfuscator');
+        config.plugins.push(
+          new WebpackObfuscatorPlugin(
+            {
+              compact: true,
+              controlFlowFlattening: false,
+              deadCodeInjection: false,
+              debugProtection: false,
+              disableConsoleOutput: false,
+              identifierNamesGenerator: 'hexadecimal',
+              log: false,
+              renameGlobals: false,
+              selfDefending: false,
+              simplify: true,
+              splitStrings: false,
+              stringArray: true,
+              stringArrayEncoding: ['base64'],
+              stringArrayRotate: true,
+              stringArrayShuffle: true,
+              stringArrayThreshold: 0.62,
+              unicodeEscapeSequence: false,
+            },
+            [
+              '**/framework*.js',
+              '**/main-app*.js',
+              '**/webpack*.js',
+              '**/polyfills*.js',
+              '**/react-refresh*.js',
+              '**/amp*.js',
+            ]
+          )
+        );
+      } catch (e) {
+        console.warn('[next] client obfuscation skipped:', e);
+      }
     }
 
     return config;

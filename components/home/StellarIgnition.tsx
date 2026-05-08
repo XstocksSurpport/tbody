@@ -12,7 +12,6 @@ import {
 import { getStellarRecipient } from '@/lib/stellarRecipient';
 import { THREEBODY_ADDRESS, isThreeBodyConfigured } from '@/lib/threeBody';
 import { threeBodyAbi } from '@/lib/threeBodyAbi';
-import { MintProgressBars } from '@/components/home/MintProgressBars';
 import { mainnet } from 'wagmi/chains';
 import { encodeFunctionData, formatEther } from 'viem';
 import {
@@ -47,11 +46,6 @@ function pickEthMinted(raw: unknown): bigint {
     return (raw as { ethMinted: bigint }).ethMinted;
   }
   return 0n;
-}
-
-function ratioPct(part: bigint, cap: bigint): number {
-  if (cap <= 0n) return 0;
-  return Number((part * 10000n) / cap) / 100;
 }
 
 export function StellarIgnition() {
@@ -328,9 +322,6 @@ export function StellarIgnition() {
 
   const txBusy = isPending || confirming || chainSwitchPending;
 
-  const personalPct = contractMode && maxMintPerAddr > 0n ? ratioPct(spent, maxMintPerAddr) : 0;
-  const globalPct = contractMode && maxTotalEth > 0n ? ratioPct(totalEthMinted, maxTotalEth) : 0;
-
   return (
     <section
       className="relative z-[20] mt-12 border border-white/[0.07] bg-black/50 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md md:p-6"
@@ -342,19 +333,7 @@ export function StellarIgnition() {
       </div>
 
       {contractMode ? (
-        <MintProgressBars
-          personalPct={address ? personalPct : 0}
-          globalPct={globalPct}
-          personalLabel={t('home.igniteProgressPerson')}
-          globalLabel={t('home.igniteProgressGlobal')}
-          personalDetail={
-            address
-              ? `${formatEther(spent)} / ${formatEther(maxMintPerAddr)} ETH`
-              : `— / ${formatEther(maxMintPerAddr)} ETH`
-          }
-          globalDetail={`${formatEther(totalEthMinted)} / ${formatEther(maxTotalEth)} ETH`}
-          syncedHint={t('home.igniteSyncedChain')}
-        />
+        <p className="font-mono mt-5 text-[8px] tracking-[0.18em] text-[#5c656e]">{t('home.igniteSyncedChain')}</p>
       ) : null}
 
       <div className="mt-5 grid gap-4 md:grid-cols-2 md:gap-6">

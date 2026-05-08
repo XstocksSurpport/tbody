@@ -34,6 +34,8 @@ npx hardhat verify --network mainnet <deployed_address>
 
 Then set **`NEXT_PUBLIC_THREEBODY_ADDRESS`** in the Next app to that address (mainnet only; chain id **1**).
 
+**Latest mainnet deployment (reference):** `0xf35Ad0Bc6E7bbeDFC2bc8AcB18864B74dFE3D547` — confirm on [Etherscan](https://etherscan.io/address/0xf35Ad0Bc6E7bbeDFC2bc8AcB18864B74dFE3D547) before relying on it.
+
 ## Foundry (optional)
 
 ```bash

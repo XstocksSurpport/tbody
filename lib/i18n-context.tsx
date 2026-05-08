@@ -13,6 +13,8 @@ import {
 import type { Locale } from '@/lib/dictionaries';
 import { dictionaries } from '@/lib/dictionaries';
 
+const LOCALE_STORAGE_KEY = '3body-locale';
+
 function deepGet(obj: unknown, path: string): string {
   const parts = path.split('.');
   let cur: unknown = obj;
@@ -31,6 +33,17 @@ type I18nCtx = {
 
 const Ctx = createContext<I18nCtx | null>(null);
 
+function readHtmlDataLocale(): Locale | null {
+  if (typeof document === 'undefined') return null;
+  try {
+    const v = document.documentElement.getAttribute('data-locale');
+    if (v === 'en' || v === 'zh') return v;
+  } catch {
+    /* */
+  }
+  return null;
+}
+
 function setHtmlDataLocale(loc: Locale | null) {
   if (typeof document === 'undefined') return;
   try {
@@ -41,7 +54,18 @@ function setHtmlDataLocale(loc: Locale | null) {
   }
 }
 
-/** Same-tab SPA only — never persisted across full document loads (see layout bootstrap script). */
+function readSessionLocale(): Locale | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const s = sessionStorage.getItem(LOCALE_STORAGE_KEY);
+    if (s === 'en' || s === 'zh') return s;
+  } catch {
+    /* */
+  }
+  return null;
+}
+
+/** In-memory override for same document before storage sync completes. */
 let localeListeners = new Set<() => void>();
 let activeLocaleOverride: Locale | null = null;
 
@@ -58,19 +82,30 @@ function notifyLocaleListeners() {
 
 function getClientLocaleSnapshot(): Locale | null {
   if (typeof window === 'undefined') return null;
-  return activeLocaleOverride;
+  if (activeLocaleOverride) return activeLocaleOverride;
+  const fromHtml = readHtmlDataLocale();
+  if (fromHtml) return fromHtml;
+  return readSessionLocale();
 }
 
 function getServerLocaleSnapshot(): null {
   return null;
 }
 
-/** Drop legacy persistence from older builds. */
+/** Remove obsolete localStorage/cookie keys only — session locale is managed by layout bootstrap + setLocale. */
 function clearLegacyLocalePersistence() {
   try {
-    localStorage.removeItem('3body-locale');
-    sessionStorage.removeItem('3body-locale');
-    document.cookie = `3body-locale=;path=/;max-age=0;SameSite=Lax`;
+    localStorage.removeItem(LOCALE_STORAGE_KEY);
+    document.cookie = `${LOCALE_STORAGE_KEY}=;path=/;max-age=0;SameSite=Lax`;
+  } catch {
+    /* */
+  }
+}
+
+function persistLocale(loc: Locale) {
+  try {
+    sessionStorage.setItem(LOCALE_STORAGE_KEY, loc);
+    setHtmlDataLocale(loc);
   } catch {
     /* */
   }
@@ -94,12 +129,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   const setLocale = useCallback((l: Locale) => {
     activeLocaleOverride = l;
-    try {
-      sessionStorage.removeItem('3body-locale');
-    } catch {
-      /* */
-    }
-    setHtmlDataLocale(l);
+    persistLocale(l);
     stripLangQueryFromBar();
     notifyLocaleListeners();
   }, []);

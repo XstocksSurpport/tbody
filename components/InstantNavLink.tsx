@@ -12,6 +12,13 @@ import {
 
 const warmedHrefs = new Set<string>();
 
+function normalizeRoutePath(p: string) {
+  if (!p) return '/';
+  let x = p.startsWith('/') ? p : `/${p}`;
+  if (x.length > 1 && x.endsWith('/')) x = x.slice(0, -1);
+  return x;
+}
+
 function isPlainPrimaryClick(e: MouseEvent<HTMLAnchorElement>) {
   if (e.defaultPrevented) return false;
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
@@ -71,10 +78,12 @@ export function InstantNavLink({
     router.push(href);
 
     window.setTimeout(() => {
-      if (stripBasePath(window.location.pathname) !== href) {
+      const cur = normalizeRoutePath(stripBasePath(window.location.pathname));
+      const want = normalizeRoutePath(href);
+      if (cur !== want) {
         window.location.assign(withBasePath(href));
       }
-    }, 3000);
+    }, 4500);
   };
 
   return (

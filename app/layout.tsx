@@ -11,8 +11,11 @@ export const metadata: Metadata = {
   other: { 'content-language': 'en' },
 };
 
-/** Every full page load: no restored locale — user always passes the language gate first. Strip `?lang=` noise. */
-const LOCALE_BOOTSTRAP_SCRIPT = `(function(){try{var K='3body-locale';sessionStorage.removeItem(K);document.documentElement.removeAttribute('data-locale');var u=new URL(location.href);if(u.searchParams.has('lang')){u.searchParams.delete('lang');var n=u.pathname+(u.search||'')+(u.hash||'');history.replaceState({},'',n)}}catch(e){}})();`;
+/**
+ * Reload → clear locale (language gate again). Normal navigations / HardNavLink full loads → restore
+ * locale from sessionStorage so home ↔ corridor flows do not skip back to the gate.
+ */
+const LOCALE_BOOTSTRAP_SCRIPT = `(function(){try{var K='3body-locale';var nav=performance.getEntriesByType('navigation')[0];var isReload=nav&&nav.type==='reload';if(!isReload&&performance.navigation&&performance.navigation.type===1)isReload=true;if(isReload){sessionStorage.removeItem(K);document.documentElement.removeAttribute('data-locale')}else{var L=sessionStorage.getItem(K);if(L==='en'||L==='zh')document.documentElement.setAttribute('data-locale',L);else document.documentElement.removeAttribute('data-locale')}var u=new URL(location.href);if(u.searchParams.has('lang')){u.searchParams.delete('lang');history.replaceState({},'',u.pathname+(u.search||'')+(u.hash||''))}}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

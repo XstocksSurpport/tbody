@@ -5,8 +5,32 @@
  */
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const https = require('https');
+const dns = require('dns');
+const { execFileSync } = require('child_process');
 const { URL } = require('url');
+
+/** Bypass poisoned/hijacked OS DNS (e.g. api.etherscan.io → 173.252.x). */
+if (!process.env.ETHERSCAN_USE_OS_DNS) {
+  dns.setServers(['8.8.8.8', '1.1.1.1', '9.9.9.9']);
+}
+
+/** Node often hits IPv6/bad DNS; Windows Invoke-WebRequest succeeds on same machine. */
+function httpViaPwsh(mode, args) {
+  const script = path.join(__dirname, 'etherscan-iwr.ps1');
+  const psArgs = ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', script, '-Mode', mode];
+  if (mode === 'Submit') {
+    psArgs.push('-BodyPath', args.bodyPath, '-SubmitUrl', args.submitUrl);
+  } else {
+    psArgs.push('-PollUrl', args.pollUrl);
+  }
+  const raw = execFileSync('powershell.exe', psArgs, {
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  return JSON.parse(raw.trim());
+}
 
 function loadEnv() {
   const roots = [
@@ -135,18 +159,32 @@ async function main() {
   });
 
   const submitUrl = `https://api.etherscan.io/v2/api?chainid=1`;
-  console.info('Submitting verification (large payload, may take 1–3 min)…');
+  const bodyPath = path.join(os.tmpdir(), `etherscan-verify-${Date.now()}.txt`);
+  fs.writeFileSync(bodyPath, params.toString(), 'utf8');
 
-  const submit = await postForm(submitUrl, params.toString(), 240_000);
-  if (!submit.json) {
-    console.error('Bad response:', submit.raw?.slice(0, 500));
-    process.exit(1);
+  console.info('Submitting verification via PowerShell IWR (large payload, up to 6 min)…');
+
+  let submit;
+  try {
+    submit = httpViaPwsh('Submit', { bodyPath, submitUrl });
+  } catch (e) {
+    console.info('PowerShell path failed, trying Node HTTPS…', e.message);
+    const fallback = await postForm(submitUrl, params.toString(), 240_000);
+    submit = fallback.json;
+    if (!submit) {
+      console.error('Bad response:', fallback.raw?.slice(0, 500));
+      process.exit(1);
+    }
+  } finally {
+    try {
+      fs.unlinkSync(bodyPath);
+    } catch (_) {}
   }
 
-  console.info('Submit status:', JSON.stringify(submit.json));
+  console.info('Submit status:', JSON.stringify(submit));
 
-  if (submit.json.message === 'OK' && submit.json.result) {
-    const guid = submit.json.result;
+  if (submit.message === 'OK' && submit.result) {
+    const guid = submit.result;
     console.info('GUID:', guid, '— polling status…');
 
     for (let i = 0; i < 40; i++) {
@@ -157,17 +195,27 @@ async function main() {
         action: 'checkverifystatus',
         guid,
       });
-      const checkUrl = `https://api.etherscan.io/v2/api?chainid=1&${checkParams.toString()}`;
-      const st = await getForm(checkUrl, 120_000);
-      console.info('Poll:', JSON.stringify(st.json));
-      const text = (st.json?.result || '').toLowerCase();
+      const pollUrl = `https://api.etherscan.io/v2/api?chainid=1&${checkParams.toString()}`;
+      let st;
+      try {
+        st = httpViaPwsh('Poll', { pollUrl });
+      } catch (e) {
+        const fallback = await getForm(pollUrl, 120_000);
+        st = fallback.json;
+        if (!st) {
+          console.error('Poll failed:', e.message, fallback.raw?.slice(0, 200));
+          continue;
+        }
+      }
+      console.info('Poll:', JSON.stringify(st));
+      const text = (st.result || '').toLowerCase();
       if (text.includes('pending')) continue;
       if (text.includes('already verified') || text.includes('pass - verified')) {
         console.info('Done: https://etherscan.io/address/' + address + '#code');
         process.exit(0);
       }
       if (text.includes('fail')) {
-        console.error('Verification failed:', st.json?.result);
+        console.error('Verification failed:', st.result);
         process.exit(1);
       }
     }
@@ -175,11 +223,9 @@ async function main() {
     process.exit(1);
   }
 
-  if (
-    String(submit.json.result || '')
-      .toLowerCase()
-      .includes('already verified')
-  ) {
+  if (String(submit.result || '')
+    .toLowerCase()
+    .includes('already verified')) {
     console.info('Already verified: https://etherscan.io/address/' + address + '#code');
     process.exit(0);
   }

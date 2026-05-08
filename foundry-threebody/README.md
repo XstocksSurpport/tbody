@@ -32,7 +32,7 @@ Publish source on Etherscan:
 npx hardhat verify --network mainnet <deployed_address>
 ```
 
-If `hardhat verify` times out (large standard-json upload), use the extended-timeout helper:
+If `hardhat verify` times out (large standard-json upload), use the helper — it **posts via Windows PowerShell `Invoke-WebRequest`** when Node cannot reach `api.etherscan.io` (IPv6/DNS):
 
 ```bash
 node scripts/verify-etherscan-http.cjs <deployed_address>

@@ -396,7 +396,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       u03: '[ COGNITIVE CARRIER ]',
       u04: '[ DEEP BAND ]',
     },
-    siteAmbient: { idle: '[ AMBIENT ]', mute: '[ MUTE ]' },
+    siteAmbient: { idle: '[ ATMOSPHERE · TAP OR CLICK ]', mute: '[ MUTE ]' },
     fault: {
       tag: '[ fault ]',
       title: 'Something broke',
@@ -712,7 +712,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       u03: '[ 智子载波 ]',
       u04: '[ 黑暗森林深带 ]',
     },
-    siteAmbient: { idle: '[ 环境音 ]', mute: '[ 静音 ]' },
+    siteAmbient: { idle: '[ 环境音 · 点按屏幕 ]', mute: '[ 静音 ]' },
     fault: {
       tag: '[ 故障 ]',
       title: '东西坏了',

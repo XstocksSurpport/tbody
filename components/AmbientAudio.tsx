@@ -1,21 +1,16 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { ObservationPanelId } from '@/lib/universeCopy';
 import { UNIVERSE_AUDIO } from '@/lib/universeAudioPresets';
-import { useI18n } from '@/lib/i18n-context';
 
 type Props = { preset: ObservationPanelId };
 
-/** Corridor-specific procedural bed — starts only after explicit gesture (browser audio policy). */
+/** Corridor procedural bed (no UI): first pointer/key starts playback. */
 export function AmbientAudio({ preset }: Props) {
-  const { t } = useI18n();
   const ctxRef = useRef<AudioContext | null>(null);
   const oscillatorsRef = useRef<OscillatorNode[]>([]);
   const noiseRef = useRef<AudioBufferSourceNode | null>(null);
-  const [on, setOn] = useState(false);
-
-  const btnIdle = t(`audio.${preset}`);
 
   const stop = useCallback(() => {
     oscillatorsRef.current.forEach((o) => {
@@ -34,7 +29,6 @@ export function AmbientAudio({ preset }: Props) {
     noiseRef.current = null;
     void ctxRef.current?.close();
     ctxRef.current = null;
-    setOn(false);
   }, []);
 
   const start = useCallback(() => {
@@ -44,6 +38,7 @@ export function AmbientAudio({ preset }: Props) {
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     const ctx = new AC();
     ctxRef.current = ctx;
+    void ctx.resume();
 
     const p = UNIVERSE_AUDIO[preset];
     const gain = ctx.createGain();
@@ -100,20 +95,29 @@ export function AmbientAudio({ preset }: Props) {
 
     oscillatorsRef.current = oscs;
     oscs.forEach((o) => o.start(0));
-    setOn(true);
+    return ctx;
   }, [preset, stop]);
 
-  return (
-    <div className="universe-ambient audio-strip">
-      {!on ? (
-        <button type="button" className="ctrl ctrl-quiet universe-ambient-btn" onClick={start}>
-          {btnIdle}
-        </button>
-      ) : (
-        <button type="button" className="ctrl ctrl-quiet universe-ambient-btn" onClick={stop}>
-          {t('audioMuteCorridor')}
-        </button>
-      )}
-    </div>
-  );
+  useEffect(() => {
+    const unlock = () => {
+      const ctx = start();
+      void ctx?.resume();
+    };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') return;
+      unlock();
+    };
+
+    window.addEventListener('pointerdown', unlock, { once: true, passive: true });
+    window.addEventListener('keydown', onKey, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', onKey);
+      stop();
+    };
+  }, [preset, start, stop]);
+
+  return null;
 }

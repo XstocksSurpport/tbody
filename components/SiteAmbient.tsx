@@ -1,8 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useI18n } from '@/lib/i18n-context';
+import { useCallback, useEffect, useRef } from 'react';
 
 /** Strip GitHub Pages `basePath` so `/tbody/u01` → `/u01`. */
 function normalizePath(pathname: string | null): string {
@@ -34,17 +33,14 @@ function makeImpulseBuffer(ctx: AudioContext): AudioBuffer {
 }
 
 /**
- * Dark-forest bed: sub drone cluster + filtered grain + plate-ish space (procedural, no samples).
- * Starts only after a user gesture (pointer / key / explicit button) — browser autoplay policy.
+ * Dark-forest bed (no UI): starts after first pointer/key on non-corridor routes only.
  */
 export function SiteAmbient() {
   const pathname = usePathname();
   const pathNorm = normalizePath(pathname);
   const onCorridor = isCorridorRoute(pathNorm);
-  const { t } = useI18n();
   const ctxRef = useRef<AudioContext | null>(null);
   const stoppableRef = useRef<Array<{ stop: () => void }>>([]);
-  const [on, setOn] = useState(false);
 
   const stop = useCallback(() => {
     stoppableRef.current.forEach((s) => {
@@ -57,7 +53,6 @@ export function SiteAmbient() {
     stoppableRef.current = [];
     void ctxRef.current?.close();
     ctxRef.current = null;
-    setOn(false);
   }, []);
 
   const start = useCallback(() => {
@@ -163,11 +158,9 @@ export function SiteAmbient() {
       },
     ];
 
-    setOn(true);
     return ctx;
   }, [stop]);
 
-  /** First pointer / key unlocks AudioContext + starts bed (mobile autoplay policy). */
   useEffect(() => {
     if (onCorridor) {
       stop();
@@ -194,32 +187,5 @@ export function SiteAmbient() {
     };
   }, [pathNorm, onCorridor, start, stop]);
 
-  if (onCorridor) {
-    return null;
-  }
-
-  return (
-    <div className="pointer-events-none fixed bottom-6 left-6 z-[80] max-w-[calc(100vw-3rem)]">
-      {!on ? (
-        <button
-          type="button"
-          onClick={() => {
-            const ctx = start();
-            void ctx?.resume();
-          }}
-          className="pointer-events-auto touch-manipulation border border-white/[0.08] bg-black/90 px-3 py-2 font-mono text-[9px] tracking-[0.24em] text-[#4f555d] transition-colors duration-[1.2s] hover:border-white/[0.14] hover:text-[#808890]"
-        >
-          {t('siteAmbient.idle')}
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={stop}
-          className="pointer-events-auto touch-manipulation border border-white/[0.08] bg-black/90 px-3 py-2 font-mono text-[9px] tracking-[0.24em] text-[#4f555d] transition-colors duration-[1.2s] hover:border-white/[0.14] hover:text-[#808890]"
-        >
-          {t('siteAmbient.mute')}
-        </button>
-      )}
-    </div>
-  );
+  return null;
 }

@@ -3,11 +3,33 @@ import './globals.css';
 import { AppChrome } from '@/components/AppChrome';
 import { Providers } from '@/components/Providers';
 
+/** Home hero lines (`home.subtitle` EN/ZH) — bilingual tab/social preview. */
+const SITE_TAGLINE =
+  '4 PARALLEL CIVILIZATIONS DETECTED · 检测到 4 条并行文明时间线 — Civilization observation interface · 文明观测界面';
+
 export const metadata: Metadata = {
-  title: '3BODY',
-  description: 'Civilization observation interface.',
-  icons: { icon: '/icon.svg' },
-  openGraph: { locale: 'en_US', type: 'website' },
+  title: { default: '3BODY', template: '%s · 3BODY' },
+  description: SITE_TAGLINE,
+  applicationName: '3BODY',
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    apple: '/icon.svg',
+  },
+  openGraph: {
+    title: '3BODY',
+    description:
+      '4 PARALLEL CIVILIZATIONS DETECTED · 检测到 4 条并行文明时间线 — Civilization observation interface · 文明观测界面',
+    locale: 'en_US',
+    alternateLocale: ['zh_CN'],
+    type: 'website',
+    siteName: '3BODY',
+  },
+  twitter: {
+    card: 'summary',
+    title: '3BODY',
+    description:
+      '4 PARALLEL CIVILIZATIONS DETECTED · 检测到 4 条并行文明时间线 — Civilization observation interface · 文明观测界面',
+  },
   other: { 'content-language': 'en' },
 };
 

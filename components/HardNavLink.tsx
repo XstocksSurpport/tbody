@@ -1,6 +1,7 @@
 'use client';
 
 import type { AnchorHTMLAttributes, MouseEvent } from 'react';
+import { stripBasePath, withBasePath } from '@/lib/basePath';
 
 const LOCALE_KEY = '3body-locale';
 
@@ -20,16 +21,20 @@ function readPersistedLocaleForNav(): 'en' | 'zh' | null {
 
 /** Append `?lang=` when returning to `/` so the next document resolves locale before React. */
 function withHomeLangHint(href: string): string {
-  if (typeof window === 'undefined') return href;
+  if (typeof window === 'undefined') return withBasePath(href.startsWith('/') ? href : `/${href}`);
   try {
-    const u = new URL(href, window.location.origin);
-    if (u.pathname !== '/' || u.searchParams.has('lang')) return href;
+    const absolute = withBasePath(href.startsWith('/') ? href : `/${href}`);
+    const u = new URL(absolute, window.location.origin);
+    const pathSansBase = stripBasePath(u.pathname);
+    if (pathSansBase !== '/' || u.searchParams.has('lang')) {
+      return `${u.pathname}${u.search}${u.hash}`;
+    }
     const loc = readPersistedLocaleForNav();
-    if (!loc) return href;
+    if (!loc) return `${u.pathname}${u.search}${u.hash}`;
     u.searchParams.set('lang', loc);
     return `${u.pathname}${u.search}${u.hash}`;
   } catch {
-    return href;
+    return withBasePath(href.startsWith('/') ? href : `/${href}`);
   }
 }
 
@@ -37,7 +42,8 @@ function navigateHard(href: string) {
   const next = withHomeLangHint(href);
   window.location.assign(next);
   window.setTimeout(() => {
-    if (window.location.pathname + window.location.search + window.location.hash !== next) {
+    const current = window.location.pathname + window.location.search + window.location.hash;
+    if (current !== next) {
       window.location.href = next;
     }
   }, 80);
@@ -63,5 +69,5 @@ export function HardNavLink({
     navigateHard(href);
   };
 
-  return <a href={href} onClick={handleClick} {...rest} />;
+  return <a href={withBasePath(href.startsWith('/') ? href : `/${href}`)} onClick={handleClick} {...rest} />;
 }

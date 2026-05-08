@@ -1,0 +1,62 @@
+# Deploy static site to GitHub Pages (Next.js `output: 'export'`).
+# After first run: Repo → Settings → Pages → Build: GitHub Actions.
+# Site URL: https://<owner>.github.io/<repo>/
+
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # `output: 'export'` does not support middleware — keep file for Vercel/Node builds only.
+      - name: Drop middleware for static export
+        run: rm -f middleware.ts
+
+      - name: Build static export
+        env:
+          STATIC_EXPORT: '1'
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}
+          NEXT_PUBLIC_MAINNET_RPC: ${{ vars.NEXT_PUBLIC_MAINNET_RPC }}
+          NEXT_PUBLIC_STELLAR_RECIPIENT: ${{ vars.NEXT_PUBLIC_STELLAR_RECIPIENT }}
+        run: npm run build
+
+      - name: Disable Jekyll (serve `_next` assets)
+        run: touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

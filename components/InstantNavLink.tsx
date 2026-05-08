@@ -1,5 +1,6 @@
 'use client';
 
+import { stripBasePath, withBasePath } from '@/lib/basePath';
 import { useRouter } from 'next/navigation';
 import {
   useEffect,
@@ -29,7 +30,7 @@ function warmHref(router: ReturnType<typeof useRouter>, href: string) {
   if (typeof window === 'undefined' || warmedHrefs.has(href)) return;
   warmedHrefs.add(href);
   window.setTimeout(() => {
-    void fetch(href, { cache: 'no-store', credentials: 'same-origin' }).catch(() => {
+    void fetch(withBasePath(href), { cache: 'no-store', credentials: 'same-origin' }).catch(() => {
       warmedHrefs.delete(href);
     });
   }, 0);
@@ -70,15 +71,15 @@ export function InstantNavLink({
     router.push(href);
 
     window.setTimeout(() => {
-      if (window.location.pathname !== href) {
-        window.location.assign(href);
+      if (stripBasePath(window.location.pathname) !== href) {
+        window.location.assign(withBasePath(href));
       }
     }, 3000);
   };
 
   return (
     <a
-      href={href}
+      href={withBasePath(href)}
       onClick={handleClick}
       onFocus={handleFocus}
       onPointerDown={handlePointerDown}

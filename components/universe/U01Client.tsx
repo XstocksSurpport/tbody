@@ -1,6 +1,6 @@
 'use client';
 
-import { HardNavLink } from '@/components/HardNavLink';
+import { InstantNavLink } from '@/components/InstantNavLink';
 import type { CSSProperties } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AmbientAudio } from '@/components/AmbientAudio';
@@ -341,7 +341,7 @@ export function U01Client() {
       </section>
 
       <footer className="u01-footer">
-        <HardNavLink href="/">{t('u01.cdHome')}</HardNavLink>
+        <InstantNavLink href="/">{t('u01.cdHome')}</InstantNavLink>
       </footer>
     </div>
   );

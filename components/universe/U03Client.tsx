@@ -1,6 +1,6 @@
 'use client';
 
-import { HardNavLink } from '@/components/HardNavLink';
+import { InstantNavLink } from '@/components/InstantNavLink';
 import { useAccount } from 'wagmi';
 import { useCallback, useMemo, useState } from 'react';
 import { AmbientAudio } from '@/components/AmbientAudio';
@@ -84,9 +84,9 @@ export function U03Client() {
       <header className="u03-header">
         <div className="u03-kicker">{t('u03.kicker')}</div>
         <h1 className="u03-title">{t('u03.title')}</h1>
-        <HardNavLink href="/" className="u03-exit">
+        <InstantNavLink href="/" className="u03-exit">
           {t('common.exit')}
-        </HardNavLink>
+        </InstantNavLink>
       </header>
 
       <div className="u03-stage">

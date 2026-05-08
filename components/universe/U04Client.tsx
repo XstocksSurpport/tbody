@@ -1,6 +1,6 @@
 'use client';
 
-import { HardNavLink } from '@/components/HardNavLink';
+import { InstantNavLink } from '@/components/InstantNavLink';
 import {
   useCallback,
   useEffect,
@@ -149,9 +149,9 @@ export function U04Client() {
     return (
       <div data-universe="u04" className="u04-root" translate="no">
         <AmbientAudio preset="u04" />
-        <HardNavLink href="/" className="u04-exit">
+        <InstantNavLink href="/" className="u04-exit">
           {t('common.exit')}
-        </HardNavLink>
+        </InstantNavLink>
         <div className="u04-silent">
           <div className="u04-silent-inner">
             <div className="u04-silent-title">{t('u04.silentTitle')}</div>
@@ -182,9 +182,9 @@ export function U04Client() {
         <strong>{t('u04.hudTlStrong')}</strong>
       </div>
 
-      <HardNavLink href="/" className="u04-exit">
+      <InstantNavLink href="/" className="u04-exit">
         {t('common.exit')}
-      </HardNavLink>
+      </InstantNavLink>
 
       <div className="u04-radar-wrap">
         <div className="u04-radar-head">{t('u04.radarTitle')}</div>

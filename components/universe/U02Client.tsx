@@ -1,6 +1,6 @@
 'use client';
 
-import { HardNavLink } from '@/components/HardNavLink';
+import { InstantNavLink } from '@/components/InstantNavLink';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AmbientAudio } from '@/components/AmbientAudio';
 import { dictionaries } from '@/lib/dictionaries';
@@ -141,7 +141,7 @@ export function U02Client() {
 
       <div className="u02-nav">
         <span>{t('u02.navBrand')}</span>
-        <HardNavLink href="/">{t('common.exit')}</HardNavLink>
+        <InstantNavLink href="/">{t('common.exit')}</InstantNavLink>
       </div>
 
       <div className="u02-split">

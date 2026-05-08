@@ -1,0 +1,43 @@
+/* Home hero — CSS-only motion (avoids Framer / hydration edge cases in production). */
+
+.protocol-manifest-hero {
+  opacity: 0;
+  animation: protocol-rise 2.45s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
+}
+
+@keyframes protocol-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.protocol-telemetry-panel {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition:
+    opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.protocol-telemetry-panel.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .protocol-manifest-hero {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .protocol-telemetry-panel {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

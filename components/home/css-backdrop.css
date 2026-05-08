@@ -1,0 +1,84 @@
+/* Home void — CSS only, no WebGL */
+
+.css-backdrop {
+  background: #000;
+  background-image:
+    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(95, 115, 135, 0.14) 0%, transparent 48%),
+    radial-gradient(ellipse 55% 40% at 85% 55%, rgba(45, 55, 70, 0.1) 0%, transparent 52%),
+    radial-gradient(ellipse 45% 32% at 12% 65%, rgba(55, 65, 80, 0.08) 0%, transparent 50%);
+}
+
+/* Topology hint — ultra-light grid, vignette-masked */
+.css-backdrop-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  background-image:
+    linear-gradient(rgba(120, 165, 210, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 165, 210, 0.11) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 72% 58% at 50% 42%, black 15%, transparent 72%);
+}
+
+/* Slow spectral drift — suggests live network scan without WebGL */
+.css-backdrop-flow {
+  position: absolute;
+  inset: 0;
+  opacity: 0.11;
+  background: linear-gradient(
+    108deg,
+    transparent 0%,
+    rgba(90, 140, 195, 0.04) 42%,
+    rgba(140, 185, 235, 0.07) 50%,
+    rgba(90, 140, 195, 0.04) 58%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  animation: css-backdrop-flow-shift 52s linear infinite;
+}
+
+@keyframes css-backdrop-flow-shift {
+  0% {
+    background-position: 180% 0;
+  }
+  100% {
+    background-position: -180% 0;
+  }
+}
+
+.css-backdrop-stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  z-index: 1;
+  background-image: radial-gradient(1px 1px at 20% 30%, rgba(220, 230, 240, 0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 70%, rgba(200, 210, 220, 0.45) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 20%, rgba(210, 218, 228, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 85%, rgba(190, 200, 210, 0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 72% 42%, rgba(205, 215, 225, 0.42) 0%, transparent 100%);
+  background-size: 100% 100%;
+  background-repeat: repeat;
+  animation: css-backdrop-twinkle 14s ease-in-out infinite alternate;
+}
+
+@keyframes css-backdrop-twinkle {
+  0% {
+    opacity: 0.16;
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    opacity: 0.28;
+    transform: translate3d(-0.2%, 0.15%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .css-backdrop-stars {
+    animation: none;
+    opacity: 0.2;
+  }
+  .css-backdrop-flow {
+    animation: none;
+    opacity: 0.06;
+  }
+}

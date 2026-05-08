@@ -12,9 +12,6 @@ import {
 } from 'react';
 import type { Locale } from '@/lib/dictionaries';
 import { dictionaries } from '@/lib/dictionaries';
-import { isReloadNavigation } from '@/lib/navigation-reload';
-
-const LOCALE_STORAGE_KEY = '3body-locale';
 
 function deepGet(obj: unknown, path: string): string {
   const parts = path.split('.');
@@ -34,28 +31,6 @@ type I18nCtx = {
 
 const Ctx = createContext<I18nCtx | null>(null);
 
-function readLocaleFromUrl(): Locale | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const q = new URLSearchParams(window.location.search).get('lang');
-    if (q === 'en' || q === 'zh') return q;
-  } catch {
-    /* */
-  }
-  return null;
-}
-
-function readHtmlDataLocale(): Locale | null {
-  if (typeof document === 'undefined') return null;
-  try {
-    const v = document.documentElement.getAttribute('data-locale');
-    if (v === 'en' || v === 'zh') return v;
-  } catch {
-    /* */
-  }
-  return null;
-}
-
 function setHtmlDataLocale(loc: Locale | null) {
   if (typeof document === 'undefined') return;
   try {
@@ -66,16 +41,39 @@ function setHtmlDataLocale(loc: Locale | null) {
   }
 }
 
-/** Same browsing session only — survives HardNavLink full navigations in this tab, but ignored on refresh. */
-function readSessionLocale(): Locale | null {
+/** Same-tab SPA only — never persisted across full document loads (see layout bootstrap script). */
+let localeListeners = new Set<() => void>();
+let activeLocaleOverride: Locale | null = null;
+
+function subscribeLocale(onStoreChange: () => void) {
+  localeListeners.add(onStoreChange);
+  return () => {
+    localeListeners.delete(onStoreChange);
+  };
+}
+
+function notifyLocaleListeners() {
+  localeListeners.forEach((fn) => fn());
+}
+
+function getClientLocaleSnapshot(): Locale | null {
   if (typeof window === 'undefined') return null;
+  return activeLocaleOverride;
+}
+
+function getServerLocaleSnapshot(): null {
+  return null;
+}
+
+/** Drop legacy persistence from older builds. */
+function clearLegacyLocalePersistence() {
   try {
-    const s = sessionStorage.getItem(LOCALE_STORAGE_KEY);
-    if (s === 'en' || s === 'zh') return s;
+    localStorage.removeItem('3body-locale');
+    sessionStorage.removeItem('3body-locale');
+    document.cookie = `3body-locale=;path=/;max-age=0;SameSite=Lax`;
   } catch {
     /* */
   }
-  return null;
 }
 
 function stripLangQueryFromBar() {
@@ -91,91 +89,23 @@ function stripLangQueryFromBar() {
   }
 }
 
-function persistLocale(loc: Locale) {
-  try {
-    sessionStorage.setItem(LOCALE_STORAGE_KEY, loc);
-    setHtmlDataLocale(loc);
-  } catch {
-    /* */
-  }
-}
-
-/** Drop legacy cross-refresh persistence from earlier builds (cookie / localStorage). */
-function clearLegacyLocalePersistence() {
-  try {
-    localStorage.removeItem(LOCALE_STORAGE_KEY);
-    document.cookie = `${LOCALE_STORAGE_KEY}=;path=/;max-age=0;SameSite=Lax`;
-  } catch {
-    /* */
-  }
-}
-
-/** Same-tab locale updates (setLocale / URL strip / history). */
-let localeListeners = new Set<() => void>();
-let activeLocaleOverride: Locale | null = null;
-
-function subscribeLocale(onStoreChange: () => void) {
-  localeListeners.add(onStoreChange);
-  return () => {
-    localeListeners.delete(onStoreChange);
-  };
-}
-
-function notifyLocaleListeners() {
-  localeListeners.forEach((fn) => fn());
-}
-
-/**
- * Hierarchy: refresh → always language gate (level 1). Same session link navigation → may restore
- * locale via `?lang=` (exit-to-home) or sessionStorage / bootstrap `data-locale`.
- */
-function getClientLocaleSnapshot(): Locale | null {
-  if (typeof window === 'undefined') return null;
-  if (activeLocaleOverride) return activeLocaleOverride;
-  if (isReloadNavigation()) return null;
-
-  const fromUrl = readLocaleFromUrl();
-  if (fromUrl) return fromUrl;
-
-  const fromBoot = readHtmlDataLocale();
-  if (fromBoot) return fromBoot;
-
-  return readSessionLocale();
-}
-
-function getServerLocaleSnapshot(): null {
-  return null;
-}
-
 export function LocaleProvider({ children }: { children: ReactNode }) {
-  const locale = useSyncExternalStore(
-    subscribeLocale,
-    getClientLocaleSnapshot,
-    getServerLocaleSnapshot
-  );
+  const locale = useSyncExternalStore(subscribeLocale, getClientLocaleSnapshot, getServerLocaleSnapshot);
 
   const setLocale = useCallback((l: Locale) => {
     activeLocaleOverride = l;
-    persistLocale(l);
+    try {
+      sessionStorage.removeItem('3body-locale');
+    } catch {
+      /* */
+    }
+    setHtmlDataLocale(l);
     stripLangQueryFromBar();
     notifyLocaleListeners();
   }, []);
 
-  /** Remove old cookie/localStorage so refresh-only gate behavior is consistent. */
   useLayoutEffect(() => {
     clearLegacyLocalePersistence();
-  }, []);
-
-  /** Apply `?lang=` from HardNavLink home exit — not used on reload (snapshot null first). */
-  useLayoutEffect(() => {
-    if (isReloadNavigation()) return;
-    const fromUrl = readLocaleFromUrl();
-    if (fromUrl) {
-      activeLocaleOverride = fromUrl;
-      persistLocale(fromUrl);
-      stripLangQueryFromBar();
-      notifyLocaleListeners();
-    }
   }, []);
 
   useEffect(() => {
@@ -204,7 +134,6 @@ export function useI18n() {
   return x;
 }
 
-/** For error surfaces / diagnostics — never throw if provider is missing. */
 export function useOptionalI18n(): I18nCtx | null {
   return useContext(Ctx);
 }

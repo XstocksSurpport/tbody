@@ -5,7 +5,7 @@ import { stripBasePath, withBasePath } from '@/lib/basePath';
 
 const LOCALE_KEY = '3body-locale';
 
-/** Same tab session only — matches i18n (sessionStorage + live `data-locale`). */
+/** Reads live `data-locale` after the language gate (same document only). */
 function readPersistedLocaleForNav(): 'en' | 'zh' | null {
   if (typeof document === 'undefined') return null;
   try {

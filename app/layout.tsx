@@ -11,11 +11,8 @@ export const metadata: Metadata = {
   other: { 'content-language': 'en' },
 };
 
-/**
- * Before React: skip entirely on reload (user must pass language gate again).
- * Otherwise `?lang=` (exit-to-home) or sessionStorage for same-session navigation only.
- */
-const LOCALE_BOOTSTRAP_SCRIPT = `(function(){try{var K='3body-locale';var nav=performance.getEntriesByType('navigation')[0];var isReload=nav&&nav.type==='reload';if(!isReload&&performance.navigation&&performance.navigation.type===1)isReload=true;if(isReload){try{sessionStorage.removeItem(K)}catch(e){}try{document.documentElement.removeAttribute('data-locale')}catch(e){}return;}var q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='zh'){document.documentElement.setAttribute('data-locale',q);return;}var L=sessionStorage.getItem(K);if(L==='en'||L==='zh')document.documentElement.setAttribute('data-locale',L)}catch(e){}})();`;
+/** Every full page load: no restored locale — user always passes the language gate first. Strip `?lang=` noise. */
+const LOCALE_BOOTSTRAP_SCRIPT = `(function(){try{var K='3body-locale';sessionStorage.removeItem(K);document.documentElement.removeAttribute('data-locale');var u=new URL(location.href);if(u.searchParams.has('lang')){u.searchParams.delete('lang');var n=u.pathname+(u.search||'')+(u.hash||'');history.replaceState({},'',n)}}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

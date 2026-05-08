@@ -4,30 +4,23 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n-context';
 
-/** Site-wide low-frequency bed — requires explicit enable (browser audio policy). */
+/** Low-register minor cluster + noise — instrumental “dark forest” bed (procedural, no external samples). */
 export function SiteAmbient() {
   const pathname = usePathname();
   const { t } = useI18n();
   const ctxRef = useRef<AudioContext | null>(null);
-  const oscillatorsRef = useRef<OscillatorNode[]>([]);
-  const noiseRef = useRef<AudioBufferSourceNode | null>(null);
+  const stoppableRef = useRef<Array<{ stop: () => void }>>([]);
   const [on, setOn] = useState(false);
 
   const stop = useCallback(() => {
-    oscillatorsRef.current.forEach((o) => {
+    stoppableRef.current.forEach((s) => {
       try {
-        o.stop();
+        s.stop();
       } catch {
-        /* already stopped */
+        /* */
       }
     });
-    oscillatorsRef.current = [];
-    try {
-      noiseRef.current?.stop();
-    } catch {
-      /* */
-    }
-    noiseRef.current = null;
+    stoppableRef.current = [];
     void ctxRef.current?.close();
     ctxRef.current = null;
     setOn(false);
@@ -41,54 +34,101 @@ export function SiteAmbient() {
     const ctx = new AC();
     ctxRef.current = ctx;
 
-    const base = 38;
-    const gain = ctx.createGain();
-    gain.gain.value = 0.014;
+    const master = ctx.createGain();
+    master.gain.value = 0.19;
 
-    const o1 = ctx.createOscillator();
-    o1.type = 'sine';
-    o1.frequency.value = base;
-    const o2 = ctx.createOscillator();
-    o2.type = 'sine';
-    o2.frequency.value = base * 1.5003;
+    const basesHz = [41.2, 61.88, 92.5, 116.54];
+    const oscs: OscillatorNode[] = [];
+    basesHz.forEach((hz, i) => {
+      const o = ctx.createOscillator();
+      o.type = i === 0 ? 'sine' : 'triangle';
+      o.frequency.value = hz;
+      const g = ctx.createGain();
+      g.gain.value = i === 0 ? 0.42 : 0.07 + i * 0.025;
+      o.connect(g);
+      g.connect(master);
+      o.start(0);
+      oscs.push(o);
+    });
 
     const lfo = ctx.createOscillator();
-    lfo.frequency.value = 0.04;
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.031;
     const lfoGain = ctx.createGain();
-    lfoGain.gain.value = 0.008;
+    lfoGain.gain.value = 0.014;
     lfo.connect(lfoGain);
-    lfoGain.connect(gain.gain);
+    lfoGain.connect(master.gain);
+    lfo.start(0);
+    oscs.push(lfo);
 
-    o1.connect(gain);
-    o2.connect(gain);
-    gain.connect(ctx.destination);
-
-    const bufferSize = ctx.sampleRate * 4;
-    const buf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const bufLen = ctx.sampleRate * 6;
+    const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
     const d = buf.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      d[i] = (Math.random() * 2 - 1) * 0.05;
+    for (let i = 0; i < bufLen; i++) {
+      d[i] = (Math.random() * 2 - 1) * 0.035;
     }
     const noise = ctx.createBufferSource();
     noise.buffer = buf;
     noise.loop = true;
     const ng = ctx.createGain();
-    ng.gain.value = 0.008;
+    ng.gain.value = 0.045;
     noise.connect(ng);
-    ng.connect(ctx.destination);
+    ng.connect(master);
     noise.start(0);
-    noiseRef.current = noise;
 
-    oscillatorsRef.current = [o1, o2, lfo];
-    [o1, o2, lfo].forEach((o) => o.start(0));
+    master.connect(ctx.destination);
+
+    stoppableRef.current = [
+      {
+        stop: () => {
+          oscs.forEach((o) => {
+            try {
+              o.stop();
+            } catch {
+              /* */
+            }
+          });
+        },
+      },
+      {
+        stop: () => {
+          try {
+            noise.stop();
+          } catch {
+            /* */
+          }
+        },
+      },
+    ];
+
     setOn(true);
+    return ctx;
   }, [stop]);
 
   useEffect(() => {
     if (/^\/u0[1-4]$/i.test(pathname ?? '')) {
       stop();
+      return;
     }
-  }, [pathname, stop]);
+
+    stop();
+    const ctx = start();
+    if (!ctx) return;
+
+    const unlock = () => {
+      void ctx.resume();
+    };
+    if (ctx.state === 'suspended') {
+      window.addEventListener('pointerdown', unlock, { once: true, passive: true });
+      window.addEventListener('keydown', unlock, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+      stop();
+    };
+  }, [pathname, start, stop]);
 
   if (/^\/u0[1-4]$/i.test(pathname ?? '')) {
     return null;

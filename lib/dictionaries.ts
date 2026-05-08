@@ -319,7 +319,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteNeedWallet: 'Connect a wallet on Ethereum mainnet first.',
       igniteWrongChain: 'Switch your wallet to Ethereum mainnet before igniting.',
       igniteNeedRecipient:
-        'Treasury address not configured (NEXT_PUBLIC_STELLAR_RECIPIENT). Ignition disabled.',
+        'Treasury address invalid. Check NEXT_PUBLIC_STELLAR_RECIPIENT override.',
       igniteInvalidShares: 'Enter a positive integer within your remaining allowance.',
       igniteOverCap: 'Exceeds per-wallet cap (1 ETH lifetime). Reduce units.',
       ignitePending: 'Awaiting wallet confirmation…',
@@ -631,7 +631,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteNeedWallet: '请先连接以太坊主网钱包。',
       igniteWrongChain: '请先在钱包中切换到以太坊主网再点燃。',
       igniteNeedRecipient:
-        '未配置收款地址（NEXT_PUBLIC_STELLAR_RECIPIENT），恒星点燃已禁用。',
+        '收款地址无效，请检查 NEXT_PUBLIC_STELLAR_RECIPIENT 覆盖配置。',
       igniteInvalidShares: '请输入不超过剩余额度的正整数份数。',
       igniteOverCap: '超出单钱包终身 1 ETH 上限，请减少份数。',
       ignitePending: '等待钱包确认…',

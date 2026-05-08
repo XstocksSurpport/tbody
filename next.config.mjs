@@ -7,6 +7,14 @@ const nextConfig = {
   reactStrictMode: true,
   /** Dev-only: hides the bottom-left Next “N” indicator that spins during compile / route work */
   devIndicators: false,
+  ...(process.env.NODE_ENV === 'production'
+    ? {
+        productionBrowserSourceMaps: false,
+        compiler: {
+          removeConsole: { exclude: ['error', 'warn'] },
+        },
+      }
+    : {}),
   ...(pagesBase ? { basePath: pagesBase } : {}),
   ...(staticExport
     ? {

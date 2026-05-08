@@ -9,21 +9,13 @@ import {
   maxSharesForWallet,
   recordIgnition,
 } from '@/lib/stellarStorage';
+import { getStellarRecipient } from '@/lib/stellarRecipient';
 import { mainnet } from 'wagmi/chains';
-import { formatEther, isAddress } from 'viem';
+import { formatEther } from 'viem';
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 const PANEL_ORDER: ObservationPanelId[] = ['u01', 'u02', 'u03', 'u04'];
-
-function recipient(): `0x${string}` | null {
-  const raw =
-    typeof process !== 'undefined'
-      ? process.env.NEXT_PUBLIC_STELLAR_RECIPIENT?.trim()
-      : '';
-  if (!raw || !isAddress(raw)) return null;
-  return raw as `0x${string}`;
-}
 
 export function StellarIgnition() {
   const { t } = useI18n();
@@ -38,7 +30,7 @@ export function StellarIgnition() {
     wei: bigint;
   } | null>(null);
 
-  const treasury = useMemo(() => recipient(), []);
+  const treasury = useMemo(() => getStellarRecipient(), []);
 
   const spent = address ? getSpentWei(address) : 0n;
   const maxS = address ? maxSharesForWallet(address) : 0;

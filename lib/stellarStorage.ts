@@ -1,7 +1,7 @@
 import { parseEther } from 'viem';
 
 export const STELLAR_SHARE_WEI = parseEther('0.02');
-export const STELLAR_CAP_WEI = parseEther('1');
+export const STELLAR_CAP_WEI = parseEther('0.5');
 
 const weiKey = (addr: string) => `3body-stellar-wei-${addr.toLowerCase()}`;
 const sharesKey = (addr: string) => `3body-stellar-shares-${addr.toLowerCase()}`;

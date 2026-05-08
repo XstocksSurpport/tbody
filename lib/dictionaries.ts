@@ -323,7 +323,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteNeedRecipient:
         'Treasury address invalid. Check NEXT_PUBLIC_STELLAR_RECIPIENT override.',
       igniteInvalidShares: 'Enter a positive integer within your remaining allowance.',
-      igniteOverCap: 'Exceeds per-wallet cap (1 ETH lifetime). Reduce units.',
+      igniteOverCap: 'Exceeds per-wallet cap (0.5 ETH lifetime). Reduce units.',
       ignitePending: 'Awaiting wallet confirmation…',
       igniteSuccess: 'Ignition confirmed on-chain — thank you, Observer.',
       igniteTxFailed: 'Failed',
@@ -636,7 +636,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       igniteNeedRecipient:
         '收款地址无效，请检查 NEXT_PUBLIC_STELLAR_RECIPIENT 覆盖配置。',
       igniteInvalidShares: '请输入不超过剩余额度的正整数份数。',
-      igniteOverCap: '超出单钱包终身 1 ETH 上限，请减少份数。',
+      igniteOverCap: '超出单钱包终身 0.5 ETH 上限，请减少份数。',
       ignitePending: '等待钱包确认…',
       igniteSuccess: '链上已确认——感谢，观测者。',
       igniteTxFailed: '失败',

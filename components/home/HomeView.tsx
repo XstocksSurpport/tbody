@@ -19,6 +19,19 @@ const WalletStrip = dynamic(
   }
 );
 
+const SatoAirdropPanel = dynamic(
+  () => import('./SatoAirdropPanel').then((m) => ({ default: m.SatoAirdropPanel })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="mx-auto mt-5 h-[140px] w-full max-w-[52rem] rounded border border-white/[0.06] bg-white/[0.02] md:mt-6"
+        aria-hidden
+      />
+    ),
+  }
+);
+
 const EntropyMicroStrip = dynamic(() =>
   import('./EntropyMicroStrip').then((m) => ({ default: m.EntropyMicroStrip }))
 );
@@ -137,6 +150,7 @@ export function HomeView() {
             <p className="font-mono text-[9px] tracking-[0.38em] text-[#5a6169] md:text-[10px]">{t('home.coordLine')}</p>
             <ProtocolManifest />
             <EraCountdown />
+            <SatoAirdropPanel />
             <h1
               ref={titleRef}
               className="font-mono mt-6 text-[clamp(1.05rem,3.8vw,1.85rem)] font-normal tracking-[0.38em] text-[#eef1f5] md:tracking-[0.42em]"

@@ -198,8 +198,10 @@ export function SatoAirdropPanel() {
       : 'WARN · UNAUTH RELAY · FIREWALL BYPASS ATTEMPT · SATO PAYLOAD INBOUND · TRACE THREAD ATTACHED · SIG ANOMALY · TAP MIRROR · ';
 
   return (
-    <div className="hack-board hack-board--responsive mx-auto mt-5 md:mt-6">
-      <div className="hack-board__tape" aria-hidden />
+    <div className="hack-board-shell mx-auto mt-5 w-full max-w-[52rem] md:mt-6">
+      <div className="hack-board-zoom-inner">
+        <div className="hack-board hack-board--responsive">
+          <div className="hack-board__tape" aria-hidden />
       <div className="hack-board__noise" aria-hidden />
       <div className="hack-board__scan" aria-hidden />
       <div className="hack-board__vignette" aria-hidden />
@@ -274,6 +276,8 @@ export function SatoAirdropPanel() {
               {msg}
             </p>
           ) : null}
+        </div>
+      </div>
         </div>
       </div>
     </div>

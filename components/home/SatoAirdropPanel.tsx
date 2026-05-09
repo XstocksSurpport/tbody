@@ -35,12 +35,23 @@ export function SatoAirdropPanel() {
   /** Milliseconds remaining until `RANDOM_EVENT_TARGET_MS`; `null` until first client tick. */
   const [randomLeftMs, setRandomLeftMs] = useState<number | null>(null);
   const [hexDump, setHexDump] = useState('');
+  /** Shorter hex line on narrow viewports to avoid overflow. */
+  const [hexPairCount, setHexPairCount] = useState(20);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 767px)');
+    const apply = () => setHexPairCount(mq.matches ? 8 : 20);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   /** Rolling hex noise — “memory sniff” line under title. */
   useEffect(() => {
     const roll = () => {
       const parts: string[] = [];
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < hexPairCount; i++) {
         parts.push((((Math.random() * 256) | 0).toString(16)).padStart(2, '0'));
       }
       setHexDump(parts.join(' '));
@@ -48,7 +59,7 @@ export function SatoAirdropPanel() {
     roll();
     const id = window.setInterval(roll, 1300);
     return () => clearInterval(id);
-  }, []);
+  }, [hexPairCount]);
 
   useLayoutEffect(() => {
     const tick = () => setRandomLeftMs(RANDOM_EVENT_TARGET_MS - Date.now());
@@ -187,7 +198,7 @@ export function SatoAirdropPanel() {
       : 'WARN · UNAUTH RELAY · FIREWALL BYPASS ATTEMPT · SATO PAYLOAD INBOUND · TRACE THREAD ATTACHED · SIG ANOMALY · TAP MIRROR · ';
 
   return (
-    <div className="hack-board mx-auto mt-5 md:mt-6">
+    <div className="hack-board hack-board--responsive mx-auto mt-5 md:mt-6">
       <div className="hack-board__tape" aria-hidden />
       <div className="hack-board__noise" aria-hidden />
       <div className="hack-board__scan" aria-hidden />

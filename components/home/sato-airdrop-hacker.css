@@ -595,3 +595,203 @@
   text-shadow: 0 0 10px rgba(74, 222, 128, 0.15);
 }
 
+/* —— Phone / narrow: compact module so nothing spills off-screen —— */
+@media (max-width: 767px) {
+  .hack-board.hack-board--responsive {
+    max-width: 100%;
+    margin-top: 0.85rem;
+    border-radius: 2px;
+    outline-width: 1px;
+    outline-color: rgba(239, 68, 68, 0.16);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.85),
+      inset 0 0 60px rgba(185, 28, 28, 0.05),
+      inset 0 1px 0 rgba(52, 211, 153, 0.08),
+      0 8px 28px rgba(0, 0, 0, 0.35),
+      0 0 36px rgba(16, 185, 129, 0.04);
+    transform: translateZ(0);
+  }
+
+  .hack-board__tape {
+    opacity: 0.08;
+  }
+
+  .hack-board__noise {
+    opacity: 0.05;
+  }
+
+  .hack-board__crt-sweep {
+    opacity: 0.85;
+    height: 18%;
+  }
+
+  .hack-board__breach-glow {
+    box-shadow: inset 0 0 36px rgba(239, 68, 68, 0.09);
+  }
+
+  .hack-board__hook {
+    width: 11px;
+    height: 11px;
+    border-color: rgba(239, 68, 68, 0.42);
+  }
+
+  .hack-board__hook--tl {
+    top: 4px;
+    left: 4px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+
+  .hack-board__hook--tr {
+    top: 4px;
+    right: 4px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+  }
+
+  .hack-board__hook--bl {
+    bottom: 4px;
+    left: 4px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+  }
+
+  .hack-board__hook--br {
+    right: 4px;
+    bottom: 4px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+  }
+
+  .hack-board__chrome {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    padding: 7px 10px 8px;
+    font-size: 6.5px;
+    letter-spacing: 0.1em;
+  }
+
+  .hack-board__chrome-left {
+    gap: 7px;
+  }
+
+  .hack-board__live-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .hack-board__chrome-tag {
+    white-space: normal;
+    line-height: 1.35;
+    letter-spacing: 0.08em;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .hack-board__chrome-meta {
+    align-self: flex-end;
+    font-size: 6.5px;
+    letter-spacing: 0.12em;
+  }
+
+  .hack-board__ticker-track span {
+    padding: 4px 2.5rem 5px 0;
+    font-size: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  .hack-board__ticker-track {
+    animation-duration: 34s;
+  }
+
+  .hack-board__body {
+    padding: 0.75rem 0.55rem 0.95rem;
+  }
+
+  .hack-board__title {
+    font-size: clamp(8.5px, 2.85vw, 10.5px);
+    letter-spacing: 0.1em;
+    line-height: 1.45;
+  }
+
+  .hack-board__hexdump {
+    margin-top: 0.45rem;
+    padding: 0.35rem 0.45rem;
+    font-size: 6px;
+    line-height: 1.35;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .hack-readout {
+    margin-top: 0.65rem;
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.45rem 0.5rem 0.5rem;
+    font-size: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .hack-readout--busy {
+    font-size: 11px;
+    min-height: 2rem;
+  }
+
+  .hack-readout__digits {
+    font-size: clamp(0.72rem, 4.5vw, 0.95rem);
+    width: 100%;
+    text-align: center;
+  }
+
+  .hack-expired {
+    margin-top: 0.65rem;
+    font-size: 8px;
+    padding: 0 0.25rem;
+  }
+
+  .hack-line {
+    margin-top: 0.65rem;
+    font-size: 8px;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    padding: 0 0.15rem;
+    word-break: break-word;
+  }
+
+  .hack-actions {
+    margin-top: 0.85rem;
+    gap: 0.45rem;
+  }
+
+  .hack-btn {
+    width: 100%;
+    max-width: 16rem;
+    padding: 0.48rem 0.85rem;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+
+  .hack-status {
+    font-size: 8px;
+    padding: 0 0.35rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .hack-board__title {
+    letter-spacing: 0.06em;
+  }
+
+  .hack-board__chrome-tag {
+    font-size: 6px;
+  }
+
+  .hack-readout__digits {
+    font-size: clamp(0.68rem, 5vw, 0.88rem);
+  }
+}
+

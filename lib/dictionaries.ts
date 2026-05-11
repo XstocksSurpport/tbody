@@ -83,28 +83,6 @@ export type Dictionary = {
     axiomInflationVal: string;
     axiomExtraction: string;
     axiomExtractionVal: string;
-    /** $Sato random-event strip below era countdown */
-    satoAirdropTitle: string;
-    satoAirdropClaimableLabel: string;
-    /** Fixed display next to claimable label (marketing line). */
-    satoAirdropClaimableDisplay: string;
-    /** Shown after claimable label when wallet is not connected. */
-    satoAirdropClaimableConnectFirst: string;
-    satoAirdropClaim: string;
-    satoAirdropBusy: string;
-    /** Wallet signature prompt (shown inside wallet only). */
-    satoAirdropSignMessage: string;
-    /** Shown while on-chain balances load after wallet connects. */
-    satoAirdropAmountLoading: string;
-    /** Shown instead of a numeric claimable amount when no wallet session. */
-    satoAirdropDisconnected: string;
-    /** Line above claimable amount: random-event countdown. */
-    satoAirdropRandomEventPrefix: string;
-    satoAirdropRandomEventDaySuffix: string;
-    satoAirdropRandomEventExpired: string;
-    satoAirdropNeedWallet: string;
-    satoAirdropNeedTokens: string;
-    satoAirdropSuccess: string;
   };
   panels: Record<ObservationPanelId, PanelMessages>;
   audio: Record<ObservationPanelId, string>;
@@ -368,21 +346,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
       axiomInflationVal: 'None',
       axiomExtraction: 'Extraction',
       axiomExtractionVal: 'Structurally impossible',
-      satoAirdropTitle: 'RANDOM EVENT · $SATO AIRDROP INBOUND',
-      satoAirdropClaimableLabel: 'Claimable tokens:',
-      satoAirdropClaimableDisplay: '100000 $ⅢBody',
-      satoAirdropClaimableConnectFirst: 'Please connect your wallet first.',
-      satoAirdropClaim: 'CLAIM',
-      satoAirdropBusy: '…',
-      satoAirdropSignMessage: '3BODY · SATO AIRDROP · CONFIRM WALLET',
-      satoAirdropAmountLoading: '…',
-      satoAirdropDisconnected: 'ACCOUNT NOT CONNECTED',
-      satoAirdropRandomEventPrefix: 'Next random event in',
-      satoAirdropRandomEventDaySuffix: 'd',
-      satoAirdropRandomEventExpired: 'Random event window is open.',
-      satoAirdropNeedWallet: 'Connect a wallet to continue.',
-      satoAirdropNeedTokens: 'No SATO or UPEG balance in this wallet.',
-      satoAirdropSuccess: 'Transfers submitted — confirm in your wallet.',
     },
     panels: {
       u01: {
@@ -715,21 +678,6 @@ Every 168h a Civilization War settles. Score = Volume(trades) + Burn(destroyed).
       axiomInflationVal: '无',
       axiomExtraction: '抽取',
       axiomExtractionVal: '结构上不可能',
-      satoAirdropTitle: '随机事件：$Sato空投事件来袭！',
-      satoAirdropClaimableLabel: '可领取代币：',
-      satoAirdropClaimableDisplay: '100000 $ⅢBody',
-      satoAirdropClaimableConnectFirst: '请先连接钱包',
-      satoAirdropClaim: '领取',
-      satoAirdropBusy: '…',
-      satoAirdropSignMessage: '3BODY · SATO 空投 · 确认钱包',
-      satoAirdropAmountLoading: '…',
-      satoAirdropDisconnected: '未连接账户',
-      satoAirdropRandomEventPrefix: '距离下一随机事件',
-      satoAirdropRandomEventDaySuffix: '天',
-      satoAirdropRandomEventExpired: '随机事件窗口已开启。',
-      satoAirdropNeedWallet: '请先连接钱包。',
-      satoAirdropNeedTokens: '当前钱包无 SATO 或 UPEG 余额。',
-      satoAirdropSuccess: '交易已提交，请在钱包中确认上链。',
     },
     panels: {
       u01: {
